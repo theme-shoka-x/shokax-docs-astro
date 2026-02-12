@@ -1,0 +1,152 @@
+---
+title: 术语表
+---
+
+本页面内收录在“指导”章节中出现的部分专用术语，按照其（拼音）首字母排序
+
+### Bun
+
+Bun 是一个为速度而生的现代 JavaScript 运行时、打包器、转译器和包管理器。它由 Zig 编写，旨在成为 Node.js 的直接替代品，通常拥有更快的启动速度和更高效的性能。
+
+安装 Bun:
+<Tabs>
+<TabItem label="Linux & MacOS">
+```bash
+curl -fsSL https://bun.sh/install | bash
+```
+</TabItem>
+<TabItem label="Windows (Powershell)">
+```bash
+powershell -c "irm bun.sh/install.ps1 | iex"
+```
+</TabItem>
+</Tabs>
+
+
+### Git
+
+Git 是目前世界上最先进的分布式版本控制系统。它用于高效地处理从很小到非常大的项目版本管理，帮助开发者跟踪代码变更、回退历史版本以及进行多人协作开发。
+
+安装 Git:
+<Tabs>
+<TabItem label="Windows (Winget)">
+在 Windows 10 1809 及更高版本中，可以使用 Winget 安装 Git。在Powershell中运行：
+```powershell
+winget install --id Git.Git -e --source winget
+```
+</TabItem>
+<TabItem label="Windows (传统安装)">
+打开 [Git Windows 下载页](https://git-scm.com/install/windows)
+
+绝大多数情况下，点击页面中的 Click here to download 按钮即可，随后运行下载得到的文件安装
+</TabItem>
+<TabItem label="Linux (Debian 系)">
+适用于 Ubuntu、Debian、Linux Mint 等。在终端运行：
+```bash
+sudo apt update
+sudo apt install git
+```
+</TabItem>
+<TabItem label="Linux (RHEL 系)">
+适用于 Fedora、Red Hat、CentOS 等。在终端运行：
+```bash
+sudo dnf install git
+```
+*注：在较旧的 CentOS 版本中可能需要使用`yum install git`*
+</TabItem>
+<TabItem label="Linux (Arch 系)">
+适用于 Arch Linux、Manjaro 等。在终端运行：
+```bash
+sudo pacman -S git
+```
+</TabItem>
+<TabItem label="MacOS">
+推荐使用 [Homebrew](https://brew.sh/) 安装：
+```zsh
+brew install git
+```
+或者，如果您安装了 Xcode 命令行工具，Git 可能已经存在。您也可以尝试在终端输入`git`，系统会提示您安装命令行开发者工具。
+</TabItem>
+</Tabs>
+
+### Github/Git 有关概念
+#### 仓库（Repository / Repo）
+
+仓库可以理解为“一个项目的家”。它通常包含：源代码、文档、图片等文件，以及这些文件的完整历史记录（每一次提交/修改）。
+
+在 GitHub 上，一个仓库就是一个远程保存点：你可以在里面浏览文件、查看提交历史、提 Issue/PR、协作开发。你在 GitHub 看到的“这个项目”，本质上就是一个仓库（外加围绕它的协作工具）。
+
+#### 克隆（git clone）
+
+`git clone` 不是简单“复制粘贴文件”。它会把远程仓库完整下载到你的电脑上，包括：
+
+- 当前项目文件
+- 全部提交历史（因此可以回退、对比、查看谁改了什么）
+- 远程地址配置（通常命名为 `origin`），方便你之后拉取更新（`git pull`）或推送更改（`git push`，如果你有权限）
+
+一句话：克隆 = 把“项目文件 + 版本历史 + 远程关联”一起带到本地。
+
+### 项目 / 开发相关概念
+
+#### Astro
+
+Astro 是一个用于构建内容型网站的现代前端框架/静态站点生成器（SSG）。它擅长把 Markdown/MDX 等内容组织成带路由的站点，并在开发时提供本地预览与热更新，在构建时输出可部署的静态资源。
+
+在本项目中，Astro 负责：
+
+- 读取并渲染 `src/content/` 下的文档内容（如 MDX）
+- 提供开发服务器（例如 `bun run dev` 后的本地预览）
+- 在 `build` 时把文档站点打包成可发布的产物
+- 通过 `astro.config.mjs` 等配置文件管理站点行为（路由、集成、构建选项等）
+
+#### JS 运行时（JavaScript Runtime）
+
+JavaScript 运行时就是“让 JavaScript 能在浏览器之外运行”的执行环境；Bun/Node.js 负责在你的电脑上运行 JS 脚本、启动开发服务器、执行构建/打包等工具链任务。
+
+#### 依赖（Dependencies）
+
+依赖就是“这个项目运行/构建所需要的第三方代码库”。它们通常记录在 `package.json` 中，通过 `bun install`（或 `npm install`/`pnpm install` 等）下载安装到本地的 `node_modules/`。
+
+为什么要装依赖？因为项目里很多能力并不是手写的：比如 Astro 本身、Markdown/MDX 解析、语法高亮、构建打包工具等都来自这些依赖。没有依赖，项目往往无法启动开发服务器或完成构建。
+
+#### 开发服务器
+
+开发服务器是给开发/写作时使用的本地预览服务，特点是：
+
+- 会监听文件变化并自动刷新（热更新），方便你边改边看
+- 更偏向调试与开发体验，性能与安全策略通常不等同于线上
+- 访问地址多为 `http://localhost:xxxx/`
+
+“真正上线的网站”（生产环境）通常是经过 `build` 构建后的产物，部署到服务器/CDN 上给所有用户访问，强调稳定、性能、缓存与安全配置。
+
+#### 命令行 / 终端（Terminal / CLI）
+
+终端（Terminal）是一个用“文字命令”与电脑交互的窗口；命令行（CLI, Command Line Interface）指的就是这种通过命令操作程序的方式。
+
+为什么要用它敲命令？因为很多开发工具就是以 CLI 形式提供的：例如安装依赖（`bun install`）、启动开发服务器（`bun run dev`）、构建站点（`bun run build`）等。相比点按钮，CLI 更可重复、可复制粘贴、也更容易在不同电脑上保持一致。
+
+#### localhost / 本地地址 / 端口
+
+`localhost` 是一个指向“你自己这台电脑”的地址（通常对应 `127.0.0.1`）。当开发服务器显示例如 `http://localhost:4321/` 时，意思是：服务器程序运行在你本机上，你正在用浏览器访问它。
+
+端口（Port）可以理解为“同一台电脑上不同网络服务的门牌号”。一台电脑可以同时跑很多服务，端口用来区分它们：例如 `:4321`、`:3000`。
+
+为什么通常只能自己访问？因为：
+
+- `localhost` 天生只在本机有效，其他设备访问它只会指向“它们自己”，而不是你的电脑
+- 很多开发服务器默认只绑定到本机（安全起见），不会对局域网公开
+
+如果你需要让同一局域网的其他设备访问，一般要让服务监听 `0.0.0.0`（或指定你的局域网 IP），并确保防火墙/路由允许对应端口访问（具体做法取决于工具与系统设置）。
+
+### 写作 / 内容相关
+#### Markdown
+
+Markdown 是一种“轻量级标记语言”，用很少的符号就能写出结构化的文档内容（标题、列表、链接、代码块、引用等），并且易读、易写。
+
+在文档站点里，Markdown 常用于编写页面正文；构建工具会把它转换成 HTML，从而在网页中展示。
+
+#### MDX
+
+MDX 可以理解为“Markdown + 组件”。它在保留 Markdown 写作体验的同时，允许你在文档中直接插入并使用组件（例如 `<Tabs>`、`<TabItem>` 这类交互/布局组件）。
+
+当你需要在一篇文档里混合“文字说明 + 可复用的 UI 组件/示例块/交互内容”时，使用 MDX 会比纯 Markdown 更灵活。

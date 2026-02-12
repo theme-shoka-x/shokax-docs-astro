@@ -1,0 +1,78 @@
+---
+title: 从 Hexo 迁移
+---
+
+## 总述
+
+<Aside type="tip">
+你可以暂时跳过本部分，先去做一些更重要，更紧急的事情，如后文的迁移指导。
+但如果你准备长期使用 ShokaX Astro，建议你阅读一下本部分，因为本部分涉及基础概念变更和后续发展方向问题
+</Aside>
+
+
+ShokaX 作为一个相对而言历史比较长的主题，经历过 Shoka、ShokaX Hexo、ShokaX Valaxy 等阶段，如果你想详细了解这部分历史，可以在稍后访问[zkz098 对 Astro 迁移的技术报告]()，其中有一章节专门介绍了这部分历史
+
+本部分只强调其与 ShokaX Hexo 相比的主要改变，有：
+
+### 转向 MDX 语法优先
+
+在 ShokaX Hexo 中，大量使用了 markdown 扩展语法，如：
+```md
+:::info
+提示提示
+:::
+
+[:heavy_check_mark:success]{.label .success}
+
+++ 绿色波浪线 ++{.wavy .success}
+++ 黄色着重点 ++{.dot .warning}
+
++++ 默认默认 
+这里是一段文字
++++
+```
+这种语法我（即zkz098）认为存在缺乏语义的问题，如果对该主题不熟悉，那么就难以理解这个文档中的富文本内容含义，进而会影响写作体验
+
+所以 ShokaX Astro 转向了 MDX 语法：
+```mdx
+<Note type="info">
+  提示提示
+</Note>
+
+<Label type="success">:heavy_check_mark: success</Label>
+
+<Underline variant="wavy" type="success">绿色波浪线</Underline>
+<Underline variant="dot" type="warning">黄色着重点</Underline>
+
+<Collapse title="默认默认 ">
+这里是一段文字
+</Collapse>
+```
+
+这样文章内的整体观感就会好很多，且因为 MDX 标签自身有语义，即使不查阅文档，也能大致理解这个富文本的内容，写作体验是流畅的。即使需要记忆符号，也比原先的更好记忆
+
+### 本地资源优先
+
+这是 ShokaX 开发组在 Polykill 事件后获得的重要教训
+
+先前，Shoka/ShokaX 依赖的三个主要服务：
+- JsDelivr CDN
+- 新浪图床
+- Polyfill io
+
+这三个服务先后全部运行异常，并各自带来了后果：
+- JsDelivr 失效让大量 Shoka/ShokaX 网站无法正常加载
+- 新浪图床失效让大量 Shoka/ShokaX 网站无法正常加载x2
+- Polyfill io 异常将所有 Shoka/ShokaX 放置在了供应链投毒的风险之下
+
+由此，ShokaX 后续逐渐形成了如下不成文规定：
+- 原则上，禁止功能模块强依赖特定第三方服务
+- 外部引用资源必须携带 SRI，能本地捆绑优先本地
+- 对于无法携带 SRI 的动态资源，必须由绝对可信提供方提供，且能手动关闭统一 Patch
+
+在 Hexo 中由于技术架构受限，我们无法完全实现上述内容，但在 Astro 版本中，我们对其进行了落实：
+- 非内容图片必须从本地加载，不能使用三方图床
+- 不从 CDN 引入 JS 和 CSS，所有 JS/CSS 均为本地提供
+- 移除 Polyfill io 及类似物支持，本地处理负责 Polyfill
+
+后文的迁移指南会详细说明如何进行修改

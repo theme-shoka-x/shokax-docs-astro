@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import AutoImport from 'astro-auto-import';
 
 // https://astro.build/config
 export default defineConfig({
@@ -11,14 +12,29 @@ export default defineConfig({
 			sidebar: [
 				{
 					label: 'Guides',
-					items: [
-						// Each item here is one entry in the navigation menu.
-						{ label: 'Example Guide', slug: 'guides/example' },
-					],
+					autogenerate: { directory: 'guides' },
 				},
 				{
 					label: 'Reference',
 					autogenerate: { directory: 'reference' },
+				},
+			],
+		}),
+		AutoImport({
+			imports: [
+				{
+					'@astrojs/starlight/components': [
+						'Aside',
+						'Badge',
+						'Card',
+						'CardGrid',
+						'FileTree',
+						'Icon',
+						'LinkCard',
+						'Steps',
+						'Tabs',
+						'TabItem',
+					],
 				},
 			],
 		}),
