@@ -7,8 +7,8 @@ import AutoImport from 'astro-auto-import';
 export default defineConfig({
 	integrations: [
 		starlight({
-			title: 'My Docs',
-			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/withastro/starlight' }],
+			title: 'ShokaX Astro Blog Theme',
+			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/theme-shoka-x/astro-blog-shokax' }],
 			sidebar: [
 				{
 					label: '教程',
@@ -31,6 +31,9 @@ export default defineConfig({
 					autogenerate: { directory: 'extra' },
 				},
 			],
+			// editLink: {
+			// 	baseUrl: ""
+			// }
 		}),
 		AutoImport({
 			imports: [
