@@ -31,9 +31,13 @@ export default defineConfig({
 					autogenerate: { directory: 'extra' },
 				},
 			],
-			// editLink: {
-			// 	baseUrl: ""
-			// }
+			editLink: {
+				baseUrl: "https://github.com/theme-shoka-x/shokax-docs-astro/edit/master"
+			},
+			lastUpdated: true,
+			components: {
+				Footer: './src/components/Footer.astro',
+			},
 		}),
 		AutoImport({
 			imports: [

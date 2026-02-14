@@ -1,0 +1,34 @@
+---
+import Default from '@astrojs/starlight/components/Footer.astro';
+---
+<Default>
+  <slot />
+</Default>
+
+<span>
+  <a target="_blank" rel="noopener" href="https://beian.miit.gov.cn">
+    津 ICP 备2022001375 号
+  </a>
+  <br>
+  <a target="_blank" href="https://beian.mps.gov.cn/#/query/webSearch?code=12011402001353">
+    津公网安备 12011402001353 号
+  </a>
+</span>
+
+<style>
+  span {
+    display: block;
+    margin-top: 1rem;
+    font-size: 1rem;
+    color: inherit;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+</style>
