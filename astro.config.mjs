@@ -7,6 +7,13 @@ import AutoImport from 'astro-auto-import';
 export default defineConfig({
 	integrations: [
 		starlight({
+			locales: {
+				root: {
+					lang: 'zh-CN',
+					label: '简体中文',
+				},
+			},
+			defaultLocale: '/',
 			title: 'ShokaX Astro Blog Theme',
 			customCss: [
 				'./src/styles/custom.css',
