@@ -1,0 +1,155 @@
+---
+title: Hyacine CLI 管理文章
+---
+
+Hyacine CLI（简称 HyC）是一个高效的 Markdown 博客管理工具，专为 Astro、Hexo 等静态博客框架设计。它基于 Bun 和 Prisma 构建，提供了完整的文章管理、分类组织、资源追踪和发布控制功能。
+
+:::note
+Hyacine CLI 与 ShokaX 来自同一开发组。ShokaX Astro 已内置 `hyacine.yml` 配置文件，无需手动初始化。
+:::
+
+## 安装
+
+:::caution[TODO]
+Hyacine CLI 尚未正式发布，安装方式待补充。
+:::
+
+## 基本使用
+
+### 创建新文章
+
+```bash
+hyc new
+```
+
+交互式创建文章，系统会提示输入文章标题
+
+文章会自动创建在配置的内容目录中，并生成标准的 frontmatter。
+
+### 同步数据库
+
+在添加、修改或删除文章后，运行同步命令更新数据库：
+
+```bash
+hyc sync
+```
+
+同步功能会：
+- 扫描所有 Markdown 文件
+- 自动检测文件变化（仅同步修改过的文件）
+- 解析 frontmatter 和资源引用
+- 更新文章元数据和资源关联
+- 清理已删除的文章记录
+
+:::tip
+同步是增量的，只处理修改过的文件，速度非常快。
+:::
+
+### 查询文章
+
+按标题、ID 或 slug 查询文章：
+
+```bash
+hyc query "文章标题"
+```
+
+会显示文章的详细信息，包括路径、分类、发布状态等。
+
+### 编辑文章
+
+在默认编辑器中打开文章：
+
+```bash
+hyc edit "文章标题"
+```
+
+编辑完成后，记得运行 `sync` 同步更改。
+
+### 发布与草稿管理
+
+将草稿发布：
+
+```bash
+hyc publish "文章标题"
+```
+
+将文章标记为草稿：
+
+```bash
+hyc draft "文章标题"
+# 或
+hyc unpublish "文章标题"
+```
+
+### 列出文章
+
+查看所有内容：
+
+```bash
+hyc list          # 列出所有内容
+hyc list posts    # 仅列出文章
+hyc list assets   # 仅列出资源
+```
+
+## 进阶功能
+
+### 分类管理
+
+设置文章的分类：
+
+```bash
+# 设置完整分类路径
+hyc category set "文章标题" "技术/Web/前端"
+
+# 在现有分类末尾添加一级
+hyc category add "文章标题" "React"
+```
+
+### 整理目录结构
+
+按指定模式重新组织文章文件：
+
+```bash
+# 按分类组织：content/posts/{category}/{article}.md
+hyc sort category
+
+# 按时间组织：content/posts/{year}/{month}/{article}.md
+hyc sort timeline
+
+# 扁平结构：content/posts/{article}.md
+hyc sort flat
+```
+
+### 统计信息
+
+查看博客统计：
+
+```bash
+hyc stats
+```
+
+显示文章总数、发布数、草稿数、分类分布等信息。
+
+### 备份项目
+
+备份所有文章和本地资源：
+
+```bash
+hyc backup ./backup.tar.gz
+```
+
+## 推荐工作流
+
+1. **初次使用**：运行 `sync` 建立数据库索引
+2. **创建文章**：`new` 创建 → 编辑内容 → `sync` 同步
+3. **管理文章**：使用 `query`/`list` 查找，`edit` 编辑，`publish`/`draft` 控制发布
+4. **定期维护**：运行 `sync` 保持数据库最新，使用 `stats` 查看概况
+5. **重构整理**：使用 `sort` 重新组织目录，`category` 调整分类
+
+:::tip
+每次修改文章后记得运行 `sync`，这样可以确保数据库与文件系统保持同步，让其他命令正常工作。
+:::
+
+## 更多信息
+
+更多命令和详细说明，请访问 [Hyacine CLI GitHub 仓库]() 或查看项目 README。

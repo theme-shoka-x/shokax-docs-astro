@@ -11,12 +11,24 @@ export default defineConfig({
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/withastro/starlight' }],
 			sidebar: [
 				{
-					label: 'Guides',
+					label: '教程',
 					autogenerate: { directory: 'guides' },
 				},
 				{
-					label: 'Reference',
-					autogenerate: { directory: 'reference' },
+					label: '部署',
+					autogenerate: { directory: 'deploy' },
+				},
+				{
+					label: '配置',
+					autogenerate: { directory: 'configs' },
+				},
+				{
+					label: '功能',
+					autogenerate: { directory: 'features' },
+				},
+				{
+					label: '扩展',
+					autogenerate: { directory: 'extra' },
 				},
 			],
 		}),

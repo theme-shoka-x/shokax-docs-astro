@@ -1,0 +1,139 @@
+---
+title: 侧边栏配置
+description: 配置作者信息、简介与社交链接，让侧边栏更“像你”
+---
+
+侧边栏（Sidebar）通常位于页面右侧（移动端会变成抽屉），它负责展示：
+
+- 头像、作者名与简介
+- 社交账号入口（GitHub / Twitter / 邮箱等）
+- 站点统计信息（文章数/分类数/标签数，自动计算）
+- 菜单（默认跟随顶部导航栏）
+
+你只需要在 `src/theme.config.ts` 的 `sidebar` 字段里填几项信息即可。
+
+## 第 1 步：只配置作者与简介（最推荐的起点）
+
+先让侧边栏“有身份”。在 `src/theme.config.ts` 中加入：
+
+```ts title="src/theme.config.ts"
+export default defineConfig({
+	// ...
+	sidebar: {
+		author: "Your Name",
+		description: "A brief introduction",
+	},
+});
+```
+
+这两项都是可选的：
+
+- 不填 `author`：侧边栏会显示默认的作者文案（取决于语言设置）。
+- 不填 `description`：简介区域会自动隐藏。
+
+## 第 2 步：添加社交链接（让读者能找到你）
+
+社交链接配置在 `sidebar.social` 中，它是一个对象（Object）：
+
+- **key（键名）**：你自己取，例如 `github`、`twitter`、`email`。
+- **value（值）**：包含 `url`（必填）和 `icon`（必填），以及可选的 `color`。
+
+一个最常见的配置如下：
+
+```ts title="src/theme.config.ts"
+export default defineConfig({
+	// ...
+	sidebar: {
+		author: "Your Name",
+		description: "A brief introduction",
+		social: {
+			github: {
+				url: "https://github.com/yourname",
+				icon: "i-ri-github-fill",
+			},
+			twitter: {
+				url: "https://twitter.com/yourname",
+				icon: "i-ri-twitter-x-line",
+			},
+			email: {
+				url: "mailto:your@email.com",
+				icon: "i-ri-mail-line",
+			},
+		},
+	},
+});
+```
+
+### 只保留你需要的社交项
+
+不想显示某个社交项？直接删掉对应的那一段就行。例如只保留 GitHub：
+
+```ts title="src/theme.config.ts"
+export default defineConfig({
+	sidebar: {
+		social: {
+			github: {
+				url: "https://github.com/yourname",
+				icon: "i-ri-github-fill",
+			},
+		},
+	},
+});
+```
+
+### 给某个社交项设置主题色（可选）
+
+你可以给任意社交项加上 `color`，用于鼠标悬停时的强调色：
+
+```ts title="src/theme.config.ts"
+export default defineConfig({
+	sidebar: {
+		social: {
+			github: {
+				url: "https://github.com/yourname",
+				icon: "i-ri-github-fill",
+				color: "#24292f",
+			},
+		},
+	},
+});
+```
+
+## 第 3 步：更换侧边栏头像（不需要改配置）
+
+侧边栏头像默认来自主题内置的头像文件。
+
+如果你只是想换成自己的头像，最简单的方式是：
+
+1. 找到文件：`src/assets/avatar.avif`
+2. 用你的头像替换它（保持文件名不变）
+
+建议使用接近正方形的图片（例如 160×160 或更大），这样显示更清晰。
+
+## 侧边栏菜单从哪里来？
+
+侧边栏底部的“菜单”**默认跟随顶部导航栏**（也就是 `nav` 配置）。
+
+因此：
+
+- 想改侧边栏菜单内容：优先去改 `nav`（见「导航栏配置」文档）。
+- `sidebar` 主要负责作者信息与社交链接。
+
+## 配置项速查
+
+| 字段 | 类型 | 说明 |
+| :--- | :--- | :--- |
+| `sidebar.author` | `string` | 作者名（可选）。 |
+| `sidebar.description` | `string` | 作者简介（可选）。 |
+| `sidebar.social` | `Record<string, { url: string; icon: string; color?: string }>` | 社交链接集合（可选）。 |
+| `sidebar.social.<name>.url` | `string` | 链接地址（必填）。外链用 `https://...`，邮箱用 `mailto:...`。 |
+| `sidebar.social.<name>.icon` | `string` | 图标类名（必填）。 |
+| `sidebar.social.<name>.color` | `string` | 主题色（可选），支持任意 CSS 颜色值。 |
+
+## 关于图标（icon）怎么选？
+
+侧边栏图标和导航栏图标用的是同一套方式：UnoCSS + Iconify。
+
+- 你可以在 [Icones](https://icones.js.org/collection/ri) 搜索 Remix Icon。
+- 复制图标名后，配置里填类似 `i-ri-github-fill` 这样的类名即可。
+

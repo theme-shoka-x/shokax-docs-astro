@@ -1,0 +1,161 @@
+---
+title: 基础配置
+description: 网站名称、语言与首页品牌信息的配置方式
+---
+
+基础配置决定了网站的核心信息：名称、语言以及首页的品牌展示。这些配置非常简单，但对网站的整体体验有重要影响。
+
+所有基础配置都在 `src/theme.config.ts` 文件的顶层。
+
+## 快速开始：最小配置
+
+打开 `src/theme.config.ts`，你会看到如下结构：
+
+```ts title="src/theme.config.ts"
+export default defineConfig({
+  siteName: "ShokaX",           // 网站名称（必填）
+  locale: "zh-CN",              // 网站语言（可选）
+  // ... 其他配置
+});
+```
+
+### siteName（网站名称）
+
+**必填项**。这是你的网站的名字，会出现在：
+
+- 浏览器标签页标题
+- 导航栏左侧
+- 页脚版权信息
+
+```ts title="src/theme.config.ts"
+export default defineConfig({
+  siteName: "我的博客",
+});
+```
+
+:::tip
+`siteName` 是唯一的必填项，其他所有配置都是可选的！
+:::
+
+### locale（语言设置）
+
+**可选项**。决定网站界面的显示语言（如"首页""文章""分类"等文案）。
+
+目前支持两种语言：
+
+- `"zh-CN"`（简体中文，默认）
+- `"en"`（英语）
+
+```ts title="src/theme.config.ts"
+export default defineConfig({
+  siteName: "My Blog",
+  locale: "en",    // 切换为英文界面
+});
+```
+
+如果不配置 `locale`，默认使用中文（`zh-CN`）。
+
+## 配置首页品牌信息（brand）
+
+首页顶部的大标题区域（封面下方）称为"品牌区"（Brand），你可以自定义三个内容：
+
+- **title**：首页大标题
+- **subtitle**：首页副标题（显示在大标题下方）
+- **logo**：Logo 图标（可以是 emoji 或简短文字）
+
+### 完整示例
+
+```ts title="src/theme.config.ts"
+export default defineConfig({
+  siteName: "ShokaX",
+  brand: {
+    title: "ShokaX",
+    subtitle: "A modern blog theme",
+    logo: "✨",
+  },
+});
+```
+
+效果：首页封面下方会显示一个 ✨ emoji，后面跟着大标题"ShokaX"和副标题"A modern blog theme"。
+
+### 只保留你需要的
+
+三个字段都是可选的，你可以只配置其中一部分：
+
+```ts title="src/theme.config.ts"
+export default defineConfig({
+  brand: {
+    title: "我的博客",
+    // 不设置 subtitle 和 logo
+  },
+});
+```
+
+或者完全不配置 `brand`：
+
+```ts title="src/theme.config.ts"
+export default defineConfig({
+  siteName: "我的博客",
+  // 不配置 brand，首页会使用默认样式
+});
+```
+
+### Logo 使用建议
+
+`logo` 字段通常填写：
+
+- **Emoji**（推荐）：如 `"🚀"`、`"💡"`、`"🌸"`
+- **短文字**：如 `"SX"`、`"Blog"`
+- **留空**：不显示 Logo 图标
+
+:::caution
+`logo` 不适合填写图片路径。如果你想使用自定义图片 Logo，建议直接修改 `src/components/Brand.astro` 组件。
+:::
+
+## 配置项速查
+
+### 顶层配置
+
+| 字段 | 类型 | 默认值 | 说明 |
+| :--- | :--- | :--- | :--- |
+| `siteName` | `string` | - | **必填**。网站名称，显示在标题栏、导航栏、页脚。 |
+| `locale` | `"zh-CN"` \| `"en"` | `"zh-CN"` | 网站界面语言。 |
+
+### brand 配置
+
+| 字段 | 类型 | 默认值 | 说明 |
+| :--- | :--- | :--- | :--- |
+| `brand.title` | `string` | - | 首页大标题。 |
+| `brand.subtitle` | `string` | - | 首页副标题（显示在标题下方）。 |
+| `brand.logo` | `string` | - | Logo 图标（推荐使用 emoji 或短文字）。 |
+
+## 完整配置示例
+
+一个典型的基础配置如下：
+
+```ts title="src/theme.config.ts"
+import { defineConfig } from "./toolkit/themeConfig";
+
+export default defineConfig({
+  // 基础信息
+  siteName: "ShokaX",
+  locale: "zh-CN",
+
+  // 首页品牌
+  brand: {
+    title: "ShokaX",
+    subtitle: "A modern blog theme",
+    logo: "✨",
+  },
+
+  // ... 其他配置（导航栏、侧边栏、封面等）
+});
+```
+
+## 下一步
+
+基础配置完成后，你可以继续配置：
+
+- [导航栏](/configs/navbar/)：顶部菜单与下拉项
+- [侧边栏](/configs/sidebar/)：作者信息与社交链接
+- [封面](/configs/covers/)：首页顶部的视觉封面

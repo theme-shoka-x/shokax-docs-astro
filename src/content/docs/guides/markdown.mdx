@@ -1,0 +1,343 @@
+---
+title: 在 Markdown 中创作内容
+description: 学习如何在 ShokaX 中使用 Markdown 和 MDX 创作博客文章
+---
+
+Markdown 是一种轻量级标记语言，让你能够使用纯文本编写格式化的文档。ShokaX 支持完整的 Markdown 语法，并通过 MDX 提供了强大的扩展能力。
+
+## 创建你的第一篇文章
+
+文章文件存放在 `src/posts/` 目录中，支持 `.md` 和 `.mdx` 两种格式。
+
+### 文件结构
+
+```
+src/
+└── posts/
+    ├── hello-world.md        # 普通 Markdown 文章
+    ├── advanced-post.mdx     # 使用 MDX 扩展的文章
+    └── getting-started/      # 也可以组织在子目录中
+        └── index.md
+```
+
+### 创建文章文件
+
+手动创建一个新文件，或使用 [Hyacine CLI](/extra/hyc/) 命令：
+
+```bash
+hyc new
+```
+
+每篇文章都需要在文件顶部包含 frontmatter（前置元数据），使用 `---` 包裹：
+
+```markdown
+---
+title: 我的第一篇博客
+date: 2026-02-14
+description: 这是一篇示例文章
+categories: [技术, 前端]
+tags: [Astro, Markdown]
+draft: false
+---
+
+这里开始写正文内容...
+```
+
+## Frontmatter 字段
+
+| 字段 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `title` | 字符串 | ✅ | 文章标题 |
+| `date` | 日期 | ✅ | 发布日期（格式：`YYYY-MM-DD`） |
+| `description` | 字符串 | ❌ | 文章描述，用于 SEO 和摘要 |
+| `categories` | 数组 | ❌ | 文章分类，支持多级分类 |
+| `tags` | 数组 | ❌ | 文章标签 |
+| `draft` | 布尔值 | ❌ | 是否为草稿（`true` 时不会发布） |
+| `updated` | 日期 | ❌ | 最后更新日期 |
+| `cover` | 图片 | ❌ | 封面图片路径 |
+| `sticky` | 布尔值 | ❌ | 是否置顶 |
+| `link` | 字符串 | ❌ | 外部链接（用于链接文章） |
+| `license` | 字符串 | ❌ | 文章许可证（见下文） |
+
+### 许可证选项
+
+支持以下 Creative Commons 许可证：
+
+- `CC-BY-4.0` - 署名
+- `CC-BY-SA-4.0` - 署名-相同方式共享
+- `CC-BY-ND-4.0` - 署名-禁止演绎
+- `CC-BY-NC-4.0` - 署名-非商业性使用
+- `CC-BY-NC-SA-4.0` - 署名-非商业性使用-相同方式共享
+- `CC-BY-NC-ND-4.0` - 署名-非商业性使用-禁止演绎
+- `NOREPRINT` - 禁止转载
+
+### Frontmatter 示例
+
+```yaml
+---
+title: TypeScript 入门指南
+date: 2026-02-14
+updated: 2026-02-15
+description: 从零开始学习 TypeScript 的完整指南
+categories: [编程, Web开发]
+tags: [TypeScript, JavaScript, 教程]
+cover: ./images/typescript-cover.png
+sticky: false
+draft: false
+license: CC-BY-SA-4.0
+---
+```
+
+## Markdown 基础语法
+
+### 标题
+
+```markdown
+# 一级标题
+## 二级标题
+### 三级标题
+#### 四级标题
+```
+
+### 文本样式
+
+```markdown
+**粗体文字**
+*斜体文字*
+~~删除线~~
+`行内代码`
+```
+
+效果：**粗体文字**、*斜体文字*、~~删除线~~、`行内代码`
+
+### 链接和图片
+
+```markdown
+[链接文本](https://example.com)
+[带标题的链接](https://example.com "鼠标悬停提示")
+
+![图片描述](./images/photo.jpg)
+![带标题的图片](./images/photo.jpg "图片标题")
+```
+
+:::tip
+图片路径可以是相对路径（相对于文章文件）或绝对路径（相对于 `src/assets/`）。
+:::
+
+### 列表
+
+**无序列表：**
+
+```markdown
+- 项目一
+- 项目二
+  - 子项目 2.1
+  - 子项目 2.2
+- 项目三
+```
+
+**有序列表：**
+
+```markdown
+1. 第一步
+2. 第二步
+3. 第三步
+```
+
+### 引用
+
+```markdown
+> 这是一段引用文字。
+> 
+> 可以包含多个段落。
+```
+
+效果：
+> 这是一段引用文字。
+> 
+> 可以包含多个段落。
+
+### 代码块
+
+使用三个反引号（\`\`\`）创建代码块，指定语言以启用语法高亮：
+
+````markdown
+```javascript
+function greeting(name) {
+  console.log(`Hello, ${name}!`);
+}
+greeting('World');
+```
+````
+
+ShokaX 的代码块支持：
+- 语法高亮
+- 行号显示
+- 彩虹括号
+- 明暗模式切换
+- 一键复制
+
+详见[代码展示功能](/features/)文档。
+
+### 表格
+
+```markdown
+| 列1 | 列2 | 列3 |
+|-----|-----|-----|
+| 内容A | 内容B | 内容C |
+| 内容D | 内容E | 内容F |
+```
+
+效果：
+
+| 列1 | 列2 | 列3 |
+|-----|-----|-----|
+| 内容A | 内容B | 内容C |
+| 内容D | 内容E | 内容F |
+
+### 分隔线
+
+```markdown
+---
+```
+
+---
+
+### 任务列表
+
+```markdown
+- [x] 已完成任务
+- [ ] 待办任务
+- [ ] 另一个待办
+```
+
+效果：
+- [x] 已完成任务
+- [ ] 待办任务
+- [ ] 另一个待办
+
+## 使用 MDX 增强你的文章
+
+MDX 是 Markdown 的超集，允许你在文章中使用 React/Svelte 组件，实现更丰富的交互效果。
+
+### 什么时候使用 MDX？
+
+- ✅ 需要使用 ShokaX 提供的扩展组件（隐藏内容、提示卡片等）
+- ✅ 需要嵌入自定义的交互式组件
+- ✅ 需要更灵活的内容展示
+- ❌ 简单的文章使用 `.md` 即可，性能更好
+
+### 启用 MDX
+
+只需将文件扩展名从 `.md` 改为 `.mdx`：
+
+```
+src/posts/my-post.md  →  src/posts/my-post.mdx
+```
+
+### MDX 基础用法
+
+在 MDX 中，你可以混合使用 Markdown 和 JSX：
+
+```mdx
+# 普通的 Markdown 标题
+
+这是普通的 Markdown 文本。
+
+<Note type="info" title="提示">
+  这是一个 ShokaX 提供的提示卡片组件。
+</Note>
+
+继续使用 **Markdown** 语法。
+```
+
+### 可用的扩展组件
+
+ShokaX 为 MDX 提供了丰富的扩展组件：
+
+#### 1. 隐藏内容（Spoiler）
+
+用于隐藏剧透或答案：
+
+```mdx
+这里有个答案：!!点击查看!!
+```
+
+#### 2. 提示卡片（Note）
+
+五种类型的提示卡片：
+
+```mdx
+<Note type="info" title="提示">
+  这是一条信息提示。
+</Note>
+
+<Note type="warning" title="注意">
+  这是一条警告信息。
+</Note>
+```
+
+:::tip
+完整的组件列表和使用方法，请查看 [MDX 扩展组件](/features/mdx/) 文档。
+:::
+
+## 最佳实践
+
+### 文件命名
+
+- 使用小写字母和连字符：`my-first-post.md`
+- 避免使用空格和特殊字符
+- 使用有意义的文件名（会影响 URL）
+
+### 分类和标签
+
+- **分类（categories）**：表示文章的主要归属，通常 1-3 个
+  ```yaml
+  categories: [技术, Web开发, 前端]
+  ```
+- **标签（tags）**：关键词标记，可以有多个
+  ```yaml
+  tags: [React, TypeScript, Hooks, 教程]
+  ```
+
+### 图片管理
+
+推荐将图片放在 `src/assets/` 目录下统一管理：
+
+```
+src/
+├── assets/
+│   └── images/
+│       ├── covers/          # 封面图
+│       └── posts/           # 文章配图
+└── posts/
+    └── my-post.md
+```
+
+在文章中引用：
+
+```markdown
+![示例图片](../../assets/images/posts/example.jpg)
+```
+
+### 草稿管理
+
+开发中的文章设置为草稿，避免误发布：
+
+```yaml
+draft: true
+```
+
+使用 [Hyacine CLI](/extra/hyc/) 快速切换发布状态：
+
+```bash
+hyc publish "文章标题"    # 发布
+hyc draft "文章标题"      # 转为草稿
+```
+
+## 下一步
+
+- 学习使用 [MDX 扩展组件](/features/mdx/) 丰富文章内容
+- 配置文章的[封面图](/configs/covers/)
+- 使用 [Hyacine CLI](/extra/hyc/) 高效管理文章
+- 探索更多[扩展功能](/features/)
