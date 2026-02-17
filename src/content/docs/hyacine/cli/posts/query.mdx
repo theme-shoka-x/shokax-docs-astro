@@ -1,0 +1,109 @@
+---
+title: 'query - 查询文章信息'
+description: '按标题、slug 或路径模糊匹配查询文章详情。'
+---
+
+# 查询文章
+
+`query` 命令用于查找特定文章的详细信息，支持通过标题、slug 或文件路径进行模糊匹配。
+
+## 基本用法
+
+```bash
+hyc query <search>
+```
+
+## 参数说明
+
+| 参数 | 说明 | 必需 |
+|------|------|------|
+| `<search>` | 查询关键词（标题、slug 或路径） | 是 |
+
+## 查询规则
+
+系统按以下优先级进行匹配搜索：
+
+1. **精确匹配 Slug** - 最高优先级，要求完全匹配
+2. **路径匹配** - 文件路径中包含搜索词
+3. **标题匹配** - 文章标题包含搜索词
+
+## 使用示例
+
+### 按标题查询
+
+```bash
+# 精确标题
+hyc query "我的第一篇文章"
+
+# 部分标题（模糊匹配）
+hyc query "我的"
+hyc query "第一篇"
+```
+
+### 按 Slug 查询
+
+```bash
+# 精确 slug
+hyc query "my-first-article"
+
+# slug 的一部分
+hyc query "first-article"
+```
+
+### 按路径查询
+
+```bash
+# 文件路径中的关键词
+hyc query "posts/blog/my-first"
+hyc query "2024"
+```
+
+## 查询失败
+
+如果查询未找到匹配的文章：
+
+```
+❌ 未找到文章，搜索词: "xyz"
+```
+
+## 常见用场景
+
+### 验证文章是否存在
+
+```bash
+hyc query "文章标题"
+```
+
+### 获取完整的文章路径
+
+```bash
+hyc query "partial-name"
+# 用于后续的 edit、publish 等操作
+```
+
+### 查看文章的 Slug
+
+```bash
+hyc query "my-article"
+# 获取自动生成的 slug 用于链接
+```
+
+## 联动命令
+
+查询结果可用于其他命令的参数：
+
+```bash
+# 查询后编辑
+TITLE=$(hyc query "search-term")
+hyc edit "$TITLE"
+
+# 或直接链式使用
+hyc edit "search-term"
+```
+
+## 下一步
+
+- 使用 [`edit`](./edit) 打开查询到的文章
+- 使用 [`publish`](./publish) 发布文章
+- 使用 [`list`](./list) 查看所有文章
+

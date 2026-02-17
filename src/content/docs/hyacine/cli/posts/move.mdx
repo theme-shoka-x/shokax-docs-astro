@@ -1,0 +1,145 @@
+---
+title: 'move - 移动文章到新位置'
+description: '调整文章在目录树中的位置，自动更新资源路径。'
+---
+
+# 移动文章
+
+`move` 命令将文章和其关联的资源移动到新的位置，自动处理路径更新，确保资源引用保持一致。
+
+:::note[路径符号说明]
+在 Hyacine CLI 中，`@/` 是项目根目录的简写符号。例如，`@/content/posts` 等价于 `<项目根目录>/content/posts`。
+:::
+
+## 基本用法
+
+```bash
+hyc move <search> <target>
+```
+
+## 参数说明
+
+| 参数 | 说明 | 必需 |
+|------|------|------|
+| `<search>` | 查询关键词（标题、slug 或路径） | 是 |
+| `<target>` | 目标位置（支持相对路径、绝对路径或 `@/` 开头的项目相对路径） | 是 |
+
+## 目标路径格式
+
+### 相对路径
+
+```bash
+# 相对于内容目录（content/posts/）
+hyc move "article" "./tech"
+hyc move "article" "tech"
+```
+
+### 绝对路径
+
+```bash
+# 完整的绝对路径
+hyc move "article" "E:\myproject\content\posts\tech"
+```
+
+### 项目相对路径（推荐）
+
+```bash
+# 使用 @/ 前缀表示项目根目录
+hyc move "article" "@/content/posts/tech"
+```
+
+## 使用示例
+
+### 移动到分类目录
+
+```bash
+# 将文章移动到 tech 分类目录
+hyc move "my-article" "@/content/posts/tech"
+
+# 结果：
+# 原路径: @/content/posts/my-article.md
+# 新路径: @/content/posts/tech/my-article.md
+```
+
+### 创建新分类目录
+
+```bash
+# 目标目录无需事先存在
+hyc move "old-article" "@/content/posts/javascript"
+# 系统会自动创建 javascript 目录
+```
+
+### 从分类中提取到根目录
+
+```bash
+# 将文章从分类目录移出
+hyc move "nested-article" "@/content/posts"
+```
+
+### 深层目录移动
+
+```bash
+# 支持多层目录路径
+hyc move "article" "@/content/posts/technology/web/frontend"
+```
+
+## 资源处理
+
+`move` 命令会自动处理文章中的资源路径更新：
+
+### 自动路径更新
+
+```markdown
+# 移动前 (在 @/content/posts/)
+![image](./assets/image.jpg)
+![cover](./hero.png)
+
+# 移动后 (在 @/content/posts/tech/)
+![image](../assets/image.jpg)
+![cover](../hero.png)
+```
+
+:::tip
+相对路径会根据新位置自动调整，确保资源链接保持有效。
+:::
+
+### 资源文件夹重命名
+
+如果启用了 `.hexo-assetdir` 模式，资源文件夹也会跟随移动：
+
+```
+移动前:
+  content/posts/
+    ├── article.md
+    └── article/
+        └── images/
+
+移动后:
+  content/posts/tech/
+    ├── article.md
+    └── article/
+        └── images/
+```
+
+## 限制与注意事项
+
+:::caution
+- 目标目录无需存在，系统会自动创建
+- 不能移动到项目外部位置（为了安全性）
+- 如果存在同名文件，移动会失败（提示冲突）
+:::
+
+## 与其他命令的区别
+
+| 命令 | 功能 | 用途 |
+|------|------|------|
+| `move` | 移动到特定目录 | 手动调整单个文章位置 |
+| `sort` | 按规则重组全部 | 批量重新组织项目结构 |
+| `rename` | 修改文件名 | 改变文件名而保持目录 |
+
+## 下一步
+
+- 使用 [`category`](./category) 设置文章分类（推荐与 move 结合）
+- 使用 [`sort`](./sort) 批量重组项目结构
+- 使用 [`list`](./list) 验证移动结果
+

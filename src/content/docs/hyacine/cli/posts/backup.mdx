@@ -1,0 +1,165 @@
+---
+title: 'backup - 备份项目内容'
+description: '创建文章和本地资源的完整备份压缩包。'
+---
+
+# 备份项目
+
+`backup` 命令创建项目内容的完整备份，将所有文章和本地资源打包为 tar.gz 压缩文件，便于保存和转移。
+
+## 基本用法
+
+```bash
+hyc backup [output]
+```
+
+## 参数说明
+
+| 参数 | 说明 | 默认值 |
+|------|------|--------|
+| `[output]` | 备份输出路径（可选） | 项目根目录 |
+
+## 功能特性
+
+✅ **完整备份** - 包含所有文章和本地资源
+✅ **压缩存储** - 使用 tar.gz 格式压缩，节省空间
+✅ **路径规范化** - 备份内使用 `@/` 前缀的标准路径
+✅ **增量识别** - 智能检测已存在的备份文件
+✅ **遗漏警告** - 报告找不到的文件
+
+## 什么会被备份
+
+### ✅ 包含的内容
+
+- **文章文件** - 所有 Markdown/MDX 文件
+- **本地资源** - 项目内存储的图片、视频等资源
+- **资源文件夹** - hexo-assetdir 模式的配套文件夹
+- **元数据** - 备份清单和时间戳信息
+
+### ❌ 不包含的内容
+
+- **数据库** - `.hyacine/data.db` 不备份（下次 sync 可重建）
+- **远程资源** - 外部 URL 链接（需要时在线重新获取）
+- **配置文件** - `hyacine.yml` 等配置（应单独版本控制）
+- **依赖项** - `node_modules`、`.bun` 等不备份
+
+:::tip
+如需完整备份包含所有文件，请使用 Git 或其他版本控制工具。
+:::
+
+## 使用示例
+
+### 默认位置备份
+
+```bash
+# 备份到项目根目录
+hyc backup
+
+# 输出：
+# 📦 开始备份...
+# 🔍 加载备份数据...
+# 📊 已加载数据:
+#    文章: 25 篇
+#    资源: 45 个
+# 📝 收集文章...
+# 🖼️  收集资源...
+# ✅ 备份完成！
+#    输出路径: E:\myproject\backup-20250217-143022.tar.gz
+#    压缩大小: 12.5 MB
+```
+
+### 指定输出路径
+
+```bash
+# 备份到特定目录
+hyc backup "./backups"
+# 输出: backups/backup-20250217-143022.tar.gz
+
+# 指定详细路径和文件名
+hyc backup "./backups/my-backup.tar.gz"
+# 输出: backups/my-backup.tar.gz
+
+# 备份到移动存储
+hyc backup "D:\Backups"
+```
+
+### 备份到云端（脚本化）
+
+```bash
+#!/bin/bash
+# auto-backup.sh - 自动备份并上传到云端
+
+hyc backup "./temp-backup"
+
+# 上传到云存储
+# aws s3 cp ./temp-backup/*.tar.gz s3://my-bucket/backups/
+
+echo "备份完成并已上传至云端"
+```
+
+## 备份文件格式
+
+### 文件名规律
+
+```
+backup-YYYYMMDD-HHMMSS.tar.gz
+backup-20250217-143022.tar.gz   # 2025年2月17日 14:30:22 创建
+```
+
+### 备份包内容
+
+```
+backup-20250217-143022.tar.gz
+  ├── posts/
+  │   ├── @/content/posts/article1.md
+  │   ├── @/content/posts/article2.md
+  │   └── @/content/posts/article1/
+  │       ├── image1.jpg
+  │       └── image2.png
+  ├── assets/
+  │   ├── @/assets/shared1.jpg
+  │   └── @/assets/shared2.png
+  └── manifest.json            # 备份清单
+```
+
+## 恢复备份
+
+### 手动恢复
+
+1. 解压备份文件：`tar -xzf backup-*.tar.gz`
+2. 复制文件到项目对应目录
+3. 运行 `hyc sync` 重建数据库
+
+```bash
+# Linux/macOS
+tar -xzf backup-20250217-143022.tar.gz
+cp -r posts/* content/posts/
+cp -r assets/* assets/
+hyc sync
+
+# Windows PowerShell
+# 需要安装 tar 支持或使用 7-Zip 等工具
+```
+
+## 安全建议
+
+:::warning
+**备份的重要性：**
+- 定期创建备份保护您的内容
+- 保存多个版本的备份副本
+- 定期测试恢复过程确保备份有效
+- 考虑将备份存储在不同位置（云端、外置存储等）
+:::
+
+:::tip
+结合 Git 版本控制和定期备份，可以完整保护您的项目：
+- Git：追踪所有变更历史
+- 备份：快速恢复完整内容
+:::
+
+## 下一步
+
+- 使用 [`optimize`](./optimize) 清理未使用的资源以减小备份大小
+- 使用 [`list`](./list) 查看包含在备份中的文件
+- 使用 [`stats`](./stats) 了解备份大小信息
+

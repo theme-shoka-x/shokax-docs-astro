@@ -1,0 +1,63 @@
+---
+title: '文章管理'
+description: 'Hyacine CLI 提供完整的 Markdown 文章生命周期管理功能。'
+---
+# 文章管理
+
+Hyacine CLI 提供了一套完整的文章管理工具，涵盖从创建、编辑到发布、整理的全流程。所有文章相关功能均通过 `hyc` 命令调用。
+
+## 核心功能
+
+<CardGrid>
+	<Card title="创建与编辑" icon="pencil">
+		使用 `new` 快速创建文章，`edit` 在编辑器中打开，`query` 查询文章信息。
+	</Card>
+	<Card title="发布管理" icon="approve-check">
+		通过 `publish` 和 `unpublish` 控制文章的发布状态，支持草稿模式。
+	</Card>
+	<Card title="组织整理" icon="setting">
+		使用 `move`、`rename` 调整文章位置和名称，`sort` 按分类或时间线重组文章结构。
+	</Card>
+	<Card title="分类管理" icon="list-format">
+		通过 `category set` 设置完整分类，`category add` 追加单级分类。
+	</Card>
+	<Card title="列表与统计" icon="information">
+		`list` 查看所有文章和资源，`stats` 生成统计报告。
+	</Card>
+	<Card title="备份与优化" icon="rocket">
+		`backup` 创建完整备份，`optimize` 清理孤立资源并检查远程链接。
+	</Card>
+</CardGrid>
+
+## 命令速查
+
+| 命令 | 功能 |
+|------|------|
+| `hyc new [title]` | 创建新文章 |
+| `hyc query <search>` | 查询文章详情 |
+| `hyc edit <search>` | 在编辑器中打开 |
+| `hyc publish <search>` | 发布文章 |
+| `hyc unpublish <search>` | 取消发布（转为草稿） |
+| `hyc list [type]` | 列出文章或资源 |
+| `hyc move <search> <target>` | 移动文章到指定目录 |
+| `hyc rename <search> <newName>` | 重命名文章 |
+| `hyc sort <mode>` | 整理文章（category/timeline/flat） |
+| `hyc category set <search> <categories>` | 设置文章分类 |
+| `hyc category add <search> <category>` | 追加分类 |
+| `hyc stats` | 显示统计信息 |
+| `hyc backup [output]` | 备份项目 |
+| `hyc optimize [--online]` | 优化数据库 |
+
+:::tip
+所有命令中的 `<search>` 参数支持文章标题、slug 或路径的模糊匹配。
+:::
+
+## 下一步
+
+选择您感兴趣的功能模块深入了解：
+
+- **[创建文章](./new)** - 快速生成 Markdown 文件并自动同步到数据库
+- **[查询与编辑](./query)** - 查找文章并在编辑器中打开
+- **[发布流程](./publish)** - 管理文章的发布状态
+- **[整理与分类](./sort)** - 按规则重组文章结构
+- **[备份与优化](./backup)** - 保护内容并清理冗余资源

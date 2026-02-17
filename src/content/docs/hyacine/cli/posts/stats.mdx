@@ -1,0 +1,57 @@
+---
+title: 'stats - 查看文章统计信息'
+description: '显示文章库存、内容量和增长趋势统计。'
+---
+
+# 统计信息
+
+`stats` 命令生成详细的项目统计报告，包括文章数量、资源使用、内容体积等多个维度的分析。
+
+## 基本用法
+
+```bash
+hyc stats
+```
+
+无需参数，直接运行命令查看统计信息。
+
+## 使用示例
+
+### 查看总体统计
+
+```bash
+hyc stats
+```
+
+## 数据更新
+
+统计数据基于数据库的最新记录，包括：
+
+- 文章元数据（标题、路径、分类等）
+- 发布状态
+- 创建和修改时间
+- 关联的资源
+
+:::note
+如果编辑了文件但未运行 `hyc sync`，统计可能反映旧数据。运行 `hyc sync` 后再统计以获得最新数据。
+:::
+
+## 导出统计数据
+
+目前 CLI 版本在终端直接输出统计结果。如需导出为文件，可以使用终端重定向：
+
+```bash
+# 重定向到文本文件（系统相关）
+hyc stats > stats.txt          # Linux/macOS
+hyc stats | tee stats.txt      # 同时显示和保存
+
+# Windows PowerShell
+hyc stats | Out-File stats.txt
+```
+
+## 下一步
+
+- 使用 [`publish`](./publish) 发布草稿文章
+- 使用 [`optimize`](./optimize) 清理孤立资源
+- 使用 [`list`](./list) 查看详细的文章列表
+

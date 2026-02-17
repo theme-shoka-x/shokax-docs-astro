@@ -1,0 +1,48 @@
+---
+title: 'Hyacine CLI'
+description: 'Hyacine CLI 是一个功能强大的命令行工具，旨在简化和自动化您的 Markdown 博客工作流。'
+---
+
+# Hyacine CLI
+
+**Hyacine CLI** 是您 Markdown 博客的最佳伴侣。它是一个功能强大的命令行工具，旨在简化和自动化您的内容管理工作流，让您专注于创作，而非繁琐的维护。
+
+从创建新文章到管理资源，再到一键发布，Hyacine CLI 提供了无缝的本地化体验。
+
+## 快速开始
+
+通过 `bun` 全局安装 Hyacine CLI，即可在任何地方使用它。
+
+```bash
+bun add @hyacine/cli -g
+```
+
+## 路径符号说明
+
+在 Hyacine CLI 的文档和命令输出中，您会看到 `@/` 符号用于表示**项目根目录**。这是一个内部路径标识符，用于存储和显示相对于项目根目录的路径。
+
+**示例：**
+- `@/content/posts/article.md` 表示项目根目录下的 `content/posts/article.md` 文件
+- `@/assets/image.jpg` 表示项目根目录下的 `assets/image.jpg` 文件
+
+**用户输入：**
+某些命令（如 `move`）支持在输入路径时使用 `@/` 前缀，作为项目根目录的简写。具体支持情况请参考各命令的文档说明。
+
+## 核心功能
+
+Hyacine CLI 围绕您的内容创作和管理流程，提供了一系列精心设计的功能。
+
+<CardGrid>
+	<Card title="内容管理" icon="document">
+		轻松创建、编辑、发布、移动和重命名您的 Markdown 文章。
+	</Card>
+	<Card title="资源同步" icon="sync">
+		自动扫描、跟踪并优化文章中引用的图片等资源，确保链接永不失效。
+	</Card>
+	<Card title="项目配置" icon="setting">
+		通过 `hyacine.yml` 进行项目初始化和配置，实现团队间的标准化协作。
+	</Card>
+	<Card title="数据迁移" icon="forward">
+		支持从其他博客平台（如 Hexo）平滑迁移您的内容和资源。
+	</Card>
+</CardGrid>

@@ -1,0 +1,141 @@
+---
+title: 'rename - 重命名文章文件'
+description: '修改文章的文件名并自动更新 slug 和资源引用。'
+---
+
+# 重命名文章
+
+`rename` 命令安全地重命名文章文件，自动更新关联的 slug、资源文件夹和内部资源路径。
+
+## 基本用法
+
+```bash
+hyc rename <search> <newName>
+```
+
+## 参数说明
+
+| 参数 | 说明 | 必需 |
+|------|------|------|
+| `<search>` | 查询关键词（标题、slug 或路径） | 是 |
+| `<newName>` | 新的文件名（可包含或不包含 .md 扩展名） | 是 |
+
+## 文件名格式
+
+### 仅文件名（推荐）
+
+```bash
+# 自动添加 .md 扩展名
+hyc rename "old-article" "new-article"
+```
+
+### 完整文件名
+
+```bash
+# 显式指定扩展名
+hyc rename "old-article" "new-article.md"
+```
+
+## 自动处理事项
+
+### Slug 自动更新
+
+原有 slug 会被新 slug 替换：
+
+```
+重命名前:
+  path: @/content/posts/old-article.md
+  slug: old-article
+
+重命名后:
+  path: @/content/posts/new-article.md
+  slug: new-article
+```
+
+:::warning
+变更 slug 可能会破坏指向旧 slug 的链接。请在重命名后更新相关引用。
+:::
+
+### 资源文件夹重命名（hexo-assetdir 模式）
+
+如果启用了资源文件夹模式，同名文件夹会自动重命名：
+
+```
+重命名前:
+  content/posts/
+    ├── old-article.md
+    └── old-article/        # 资源文件夹
+        ├── image1.jpg
+        └── image2.png
+
+重命名后:
+  content/posts/
+    ├── new-article.md
+    └── new-article/        # 自动重命名
+        ├── image1.jpg
+        └── image2.png
+```
+
+### 资源路径自动更新
+
+文章内的资源引用路径会自动调整：
+
+```markdown
+# 重命名前
+![](./old-article/image.jpg)
+![](./old-article/hero.png)
+
+# 重命名后
+![](./new-article/image.jpg)
+![](./new-article/hero.png)
+```
+
+## 注意事项
+
+### 与标题的关系
+
+```bash
+# rename 只改变文件名，不改变文章标题
+# 文章标题需要在 edit 中修改
+
+# 修改文件名
+hyc rename "article" "new-article"
+
+# 修改文章标题（在编辑器中）
+hyc edit "new-article"
+# 编辑 YAML front-matter 中的 title 字段
+```
+
+### 特殊字符处理
+
+系统会自动清理文件名中的特殊字符：
+
+```bash
+hyc rename "article" "my article! @#$"
+# 结果文件名: my-article
+
+hyc rename "article" "文章-2024"
+# 结果文件名: wen-zhang-2024
+```
+
+## 反向操作
+
+若要恢复
+
+之前的名称，再次运行 rename 即可：
+
+```bash
+# 原名: old-article
+# 改为: new-article
+hyc rename "old-article" "new-article"
+
+# 想恢复
+hyc rename "new-article" "old-article"
+```
+
+## 下一步
+
+- 使用 [`edit`](./edit) 修改文章标题和其他元数据
+- 使用 [`move`](./move) 调整文章目录位置
+- 使用 [`category`](./category) 设置文章分类
+

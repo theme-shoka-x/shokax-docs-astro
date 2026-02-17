@@ -1,0 +1,255 @@
+---
+title: 'category - 管理文章分类'
+description: '设置或追加文章的分类层级。'
+---
+
+# 分类管理
+
+`category` 命令用于管理文章的分类信息，支持多级分类结构和灵活的分类编辑方式。
+
+## 基本用法
+
+```bash
+# 设置分类（完全替换）
+hyc category set <search> <categories>
+
+# 添加分类（在最后一级追加）
+hyc category add <search> <category>
+```
+
+## 分类结构
+
+Hyacine CLI 支持多级分类，通过 `categories` 数组表示：
+
+```yaml
+categories:
+  - "技术"           # 一级分类
+  - "Web开发"        # 二级分类
+  - "前端框架"       # 三级分类
+```
+
+在文件系统中对应目录结构：
+
+```
+content/posts/
+  ├── 技术/
+  │   ├── Web开发/
+  │   │   ├── 前端框架/
+  │   │   │   └── react-hooks.md
+  │   │   └── 后端框架/
+  │   │       └── nodejs-express.md
+  │   └── 数据库/
+  │       └── postgresql.md
+  └── 生活/
+      └── 旅游笔记.md
+```
+
+## category set - 设置分类
+
+**完全替换**文章的分类，适合为新文章设置分类或重新分类。
+
+### 基本语法
+
+```bash
+hyc category set <search> <categories>
+```
+
+### 参数说明
+
+| 参数 | 说明 | 必需 |
+|------|------|------|
+| `<search>` | 查询关键词（标题、slug 或路径） | 是 |
+| `<categories>` | 分类输入（见下方格式） | 是 |
+
+### 分类输入格式
+
+#### 方式 1：逗号分隔（推荐简单情况）
+
+```bash
+# 简单两级分类
+hyc category set "article" "技术,Web开发"
+
+# 三级分类
+hyc category set "article" "技术,Web开发,前端框架"
+
+# 中英混合
+hyc category set "article" "Tech,Web Development,React"
+```
+
+#### 方式 2：JSON 数组（适合特殊字符）
+
+```bash
+# 包含逗号或特殊字符的分类
+hyc category set "article" '["物品, 工具", "代码编辑器"]'
+
+# 需要引号的分类名
+hyc category set "article" '["AI/机器学习", "LLM"]'
+```
+
+### 使用示例
+
+### 为新文章设置分类
+
+```bash
+# 创建新文章
+hyc new "React Hooks 终极指南"
+
+# 设置分类（覆盖现有分类）
+hyc category set "React Hooks 终极指南" "技术,Web开发,前端框架"
+
+# 查询确认
+hyc query "React Hooks"
+
+# 输出：
+# 📄 查询结果
+# 标题: React Hooks 终极指南
+# 分类: 技术 > Web开发 > 前端框架
+# 路径: @/content/posts/技术/Web开发/前端框架/react-hooks-guide.md
+```
+
+### 更改现有分类
+
+```bash
+# 原分类: 技术 > Python > 数据科学
+hyc category set "ml-basics" "技术,人工智能,机器学习"
+
+# 现在分类: 技术 > 人工智能 > 机器学习
+# 文件自动移动到新位置（使用 sort category）
+```
+
+### 减少分类级别
+
+```bash
+# 从三级简化为两级
+hyc category set "old-article" "技术,杂项"
+
+# 文件从多级目录提升到较浅位置
+```
+
+## category add - 添加分类
+
+**追加一个分类**到现有分类的最后一级，适合递进式地细化分类。
+
+### 基本语法
+
+```bash
+hyc category add <search> <category>
+```
+
+### 参数说明
+
+| 参数 | 说明 | 必需 |
+|------|------|------|
+| `<search>` | 查询关键词 | 是 |
+| `<category>` | 要添加的单个分类名 | 是 |
+
+### 使用示例
+
+### 逐步细化分类
+
+```bash
+# 初始化一篇文章
+hyc new "我的技术分享"
+hyc category set "我的技术分享" "技术,分享"
+
+# 后来发现需要更细分
+# 添加子分类而非覆盖
+hyc category add "我的技术分享" "Web开发"
+
+# 现在分类: 技术 > 分享 > Web开发
+```
+
+### 添加标签式分类
+
+```bash
+# 原分类: 技术 > 数据库
+hyc category add "postgresql-tips" "性能优化"
+
+# 新分类: 技术 > 数据库 > 性能优化
+```
+
+## 分类设计建议
+
+### 分类命名规范
+
+- **使用清晰的中文或英文** - 避免过于缩写或模糊
+- **保持层级简洁** - 建议 2-3 级深度为最佳
+- **避免过度分化** - 不要为每篇文章创建独特分类
+
+### 分类示例参考
+
+**技术类博客：**
+```
+技术
+  ├── Web开发
+  │   ├── 前端
+  │   └── 后端
+  ├── 数据库
+  │   ├── SQL
+  │   └── NoSQL
+  └── DevOps
+  
+生活
+  ├── 旅游
+  ├── 美食
+  └── 运动
+```
+
+**混合型内容：**
+```
+Content
+  ├── 技术教程
+  ├── 产品分享
+  ├── 生活随笔
+  └── 资源合集
+```
+
+## 与其他命令的配合
+
+```bash
+# 1. 设置分类
+hyc category set "article" "技术,Web"
+
+# 2. 按分类整理（创建对应目录）
+hyc sort category
+
+# 3. 查看自动生成的目录结构
+hyc list posts
+
+# 4. 查询验证
+hyc query "article"
+```
+
+## 常见问题
+
+### 如何从文章中移除所有分类？
+
+```bash
+# 设置为空数组
+hyc category set "article" ""
+
+# 或设置为根分类
+hyc category set "article" "未分类"
+```
+
+### 如何查看文章的当前分类？
+
+```bash
+hyc query "article-title"
+# 在输出结果中查看 "分类" 字段
+```
+
+### 修改分类后为什么目录未更新？
+
+```bash
+# 需要运行 sort 命令来同步目录结构
+hyc category set "article" "新分类"
+hyc sort category
+```
+
+## 下一步
+
+- 使用 [`sort`](./sort) 按分类整理文件结构
+- 使用 [`move`](./move) 手动移动特定文章
+- 使用 [`list`](./list) 查看分类统计
+

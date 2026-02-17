@@ -1,0 +1,112 @@
+---
+title: 'publish - 管理文章发布状态'
+description: '发布或取消发布（草稿）内容。'
+---
+
+# 发布文章
+
+`publish` 和 `unpublish` 命令用于管理文章的发布状态。已发布的文章将在您的网站上显示，而草稿文章仅在开发模式下可见。
+
+## 基本用法
+
+```bash
+# 发布文章
+hyc publish <search>
+
+# 取消发布（转为草稿）
+hyc unpublish <search>
+
+# draft 命令是 unpublish 的别名
+hyc draft <search>
+```
+
+## 参数说明
+
+| 参数 | 说明 | 必需 |
+|------|------|------|
+| `<search>` | 查询关键词（标题、slug 或路径） | 是 |
+
+## 发布状态
+
+系统使用 `draft` 字段管理文章状态：
+
+| 状态 | draft 值 | 说明 |
+|------|----------|------|
+| 已发布 | `false` | 文章在网站的生产环境显示 |
+| 草稿 | `true` | 文章仅在开发环境显示 |
+
+:::tip
+所有新创建的文章默认为 `draft: true`（草稿状态）。您需要明确发布后，文章才能在网站上显示。
+:::
+
+## 使用示例
+
+### 发布文章
+
+```bash
+# 按标题发布
+hyc publish "我的第一篇文章"
+
+# 按 slug 发布
+hyc publish "my-first-article"
+
+# 按路径匹配发布
+hyc publish "2024"
+```
+
+### 取消发布
+
+```bash
+# 转为草稿（unpublish）
+hyc unpublish "我的第一篇文章"
+
+# 或使用别名 draft
+hyc draft "my-first-article"
+```
+
+## 前置元数据
+
+发布状态存储在文章的 YAML 前置元数据中：
+
+```markdown
+---
+title: "我的文章"
+draft: false          # 已发布
+categories: ["技术"]
+---
+```
+
+您也可以手动编辑此字段，然后运行 `hyc sync` 同步数据库。
+
+## 常见问题
+
+### 文章已发布但网站上看不到
+
+```bash
+# 检查发布状态
+hyc query "article-title"
+
+# 如果仍无显示，运行同步
+hyc sync
+
+# 清理网站缓存后重建
+```
+
+### 如何批量发布？
+
+目前需要逐个发布。可以通过脚本自动化：
+
+```bash
+#!/bin/bash
+# publish-all.sh - 发布所有草稿文章（示例）
+hyc publish "article1"
+hyc publish "article2"
+hyc publish "article3"
+```
+
+## 下一步
+
+- 使用 [`list`](./list) 查看所有文章及其发布状态
+- 使用 [`edit`](./edit) 编辑已发布的文章
+- 使用 [`stats`](./stats) 查看发布统计
+

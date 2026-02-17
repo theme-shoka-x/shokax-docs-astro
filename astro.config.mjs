@@ -55,7 +55,18 @@ export default defineConfig({
 								autogenerate: { directory: '/guides/configs/' },
 							}
 						]
-					}
+					},
+          {
+            label: "生态系统",
+            link: "/hyacine/cli/",
+            icon: "puzzle",
+            items: [
+              {
+                label: "Hyacine CLI",
+                autogenerate: { directory: "/hyacine/cli/" },
+              }
+            ]
+          }
         ]),
       ],
       editLink: {
