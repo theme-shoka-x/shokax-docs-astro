@@ -1,0 +1,261 @@
+---
+title: 字体配置
+description: 自定义和优化网站字体
+---
+
+ShokaX 主题使用自定义字体提升阅读体验。默认提供了两款开源字体：
+
+- **LXGW WenKai**（霞鹜文楷）：正文字体，优雅的中文楷体风格
+- **Maple Mono CN**：代码字体，适合代码展示的等宽字体
+
+## 快速更换字体
+
+### 1. 更换正文字体
+
+如果你想使用自己的字体，只需**替换字体文件**即可：
+
+1. 找到文件：`src/assets/fonts/LXGWWenKai-Regular.ttf`
+2. 用你的字体文件替换它（**保持文件名不变**）
+3. 重启开发服务器
+
+:::tip[无需修改代码]
+主题会自动加载 `LXGWWenKai-Regular.ttf`，只要保持文件名不变，就不需要修改任何配置或代码。
+:::
+
+:::note[选择合适的字体]
+建议选择**字符集覆盖范围适中**的字体（如仅包含常用汉字的简体中文字体），避免使用支持过多字符集的字体（如同时支持简体、繁体、日文、韩文的大字符集字体），以获得更好的优化效果。
+:::
+
+### 2. 更换代码字体
+
+代码块字体的替换方式相同：
+
+1. 找到文件：`src/assets/fonts/MapleMono-CN-Regular.ttf`
+2. 用你的等宽字体替换它（**保持文件名不变**）
+3. 重启开发服务器
+
+:::note[推荐等宽字体]
+代码字体建议使用等宽字体（Monospace），以保证代码对齐。常见选择：Fira Code、JetBrains Mono、Source Code Pro 等。
+:::
+
+## 字体文件格式
+
+**主题仅支持 TTF 格式**：
+
+- **TTF**（TrueType Font）：兼容性好，`vite-plugin-font` 对 TTF 的处理效果最佳
+- ❌ **不支持 OTF/WOFF2**：虽然现代浏览器支持这些格式，但 `vite-plugin-font` 在处理非 TTF 格式时可能出现问题
+
+:::tip[自动格式转换]
+无需担心浏览器兼容性——`vite-plugin-font` 会自动将 TTF 转换为 WOFF 格式用于生产环境，兼顾压缩率和兼容性。
+:::
+
+:::caution[文件大小]
+中文字体通常较大（几 MB 到十几 MB），会影响首屏加载速度。主题默认开启了**字体子集化**优化（见下文），能将字体体积压缩到几百 KB。
+:::
+
+## 字体子集化优化（进阶）
+
+主题使用 `vite-plugin-font` 自动进行字体子集化，只打包实际使用的文字，大幅减小字体文件体积。
+
+### 工作原理
+
+构建时，插件会：
+
+1. 扫描你的所有文章和页面（`scanFiles` 指定的文件）
+2. 提取所有用到的文字
+3. 只打包这些文字对应的字形（glyph），移除未使用的部分
+
+结果：原本 10MB 的字体可能被压缩到几百 KB。
+
+### 配置位置
+
+字体子集化在 `astro.config.mjs` 中配置：
+
+```js title="astro.config.mjs"
+import Font from "vite-plugin-font";
+
+export default defineConfig({
+  vite: {
+    plugins: [
+      Font.vite({
+        scanFiles: ["src/**/*.{svelte,ts,tsx,js,jsx,md,mdx,json,astro}"],
+      }),
+    ],
+  },
+});
+```
+
+### 引用方式
+
+在代码中通过 `?subsets` 后缀引用：
+
+```js title="src/layouts/Layout.astro"
+import { css } from "@/assets/fonts/LXGWWenKai-Regular.ttf?subsets";
+```
+
+## 故障排查：字体显示异常
+
+### 问题现象
+
+- 某些文字显示为方块 □ 或默认字体
+- 字体样式不生效
+- 构建时报字体相关错误
+
+### 解决方案：禁用按需子集化
+
+如果遇到字体显示问题，可以禁用**按需最小子集化**（插件仍会进行子集化和格式转换，但会包含字体的所有字符）：
+
+**步骤 1：删除 `scanFiles` 选项**
+
+编辑 `astro.config.mjs`，将 Font 插件配置改为：
+
+```js title="astro.config.mjs" del={1,2,3} ins={4}
+Font.vite({
+  scanFiles: ["src/**/*.{svelte,ts,tsx,js,jsx,md,mdx,json,astro}"],
+}),
+Font.vite(),
+```
+
+或者直接删除整行 `scanFiles`：
+
+```js title="astro.config.mjs"
+Font.vite({
+  // scanFiles 已删除
+}),
+```
+
+**步骤 2：移除字体导入的 `?subsets` 后缀**
+
+找到所有字体导入语句，删除 `?subsets`：
+
+**位置 1：正文字体**（`src/layouts/Layout.astro`）
+
+```js title="src/layouts/Layout.astro" del={1} ins={2}
+import { css } from "@/assets/fonts/LXGWWenKai-Regular.ttf?subsets";
+import { css } from "@/assets/fonts/LXGWWenKai-Regular.ttf";
+```
+
+**位置 2：代码字体**（`src/components/CodeBlock.svelte`）
+
+```js title="src/components/CodeBlock.svelte" del={1} ins={2}
+import { css } from "../assets/fonts/MapleMono-CN-Regular.ttf?subsets";
+import { css } from "../assets/fonts/MapleMono-CN-Regular.ttf";
+```
+
+**步骤 3：重启开发服务器**
+
+```bash
+bun run dev
+```
+
+:::caution[font-face CSS 体积膨胀风险]
+禁用 `scanFiles` 后，插件会对字体**全字符集**进行子集化，如果字体支持的字符集过大（如包含简繁日韩的 CJK 全字符集），会生成大量 font-face CSS 定义，导致 CSS 文件体积严重膨胀（可能达到数 MB）。
+
+**建议**：优先选择字符集覆盖范围适中的字体（如仅支持简体中文常用字的字体），而非大而全的多字符集字体。
+:::
+
+## 添加多个字体（进阶）
+
+如果你需要使用多个字体系列（如标题用一个字体，正文用另一个），推荐使用 **CSS 样式方式**，性能更好。
+
+### 1. 添加字体文件
+
+在 `src/assets/fonts/` 目录下添加新字体文件：
+
+```
+src/assets/fonts/
+  ├── LXGWWenKai-Regular.ttf     # 正文字体
+  ├── MapleMono-CN-Regular.ttf   # 代码字体
+  └── MyTitle-Bold.ttf           # 新增：标题字体
+```
+
+### 2. 导入并注册字体
+
+在 `src/layouts/Layout.astro` 中导入：
+
+```astro title="src/layouts/Layout.astro"
+<script>
+  import { css as bodyFont } from "@/assets/fonts/LXGWWenKai-Regular.ttf?subsets";
+  import { css as titleFont } from "@/assets/fonts/MyTitle-Bold.ttf?subsets";
+
+  // 注入全局 CSS 变量
+  document.documentElement.style.setProperty('--font-body', bodyFont.family);
+  document.documentElement.style.setProperty('--font-title', titleFont.family);
+</script>
+```
+
+### 3. 在 CSS 中使用
+
+在 `src/styles/style.css` 或其他样式文件中：
+
+```css title="src/styles/style.css"
+body {
+  font-family: var(--font-body, sans-serif);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-title, var(--font-body, sans-serif));
+}
+```
+
+:::tip[为什么用 CSS 变量？]
+相比 JavaScript 动态设置 `style.fontFamily`，CSS 变量方式：
+
+- 性能更好（避免强制重排）
+- 支持 CSS 回退（fallback）
+- 更符合 Web 标准
+  :::
+
+## 常见问题
+
+### Q: 更换字体后样式没变化？
+
+1. 确认字体文件名是否保持不变（`LXGWWenKai-Regular.ttf`）
+2. 尝试清除缓存并重启：`bun run build` 或硬刷新浏览器（Ctrl+Shift+R）
+3. 检查浏览器控制台是否有字体加载错误
+
+### Q: 字体文件太大，影响加载速度？
+
+1. **开启子集化**（默认已开启）：只打包使用的文字，能将 10MB 字体压缩到几百 KB
+2. **字体预加载**：在 `<head>` 中添加 `<link rel="preload">`（高级用法，需配合完整字体路径）
+
+:::note
+不建议转换为 WOFF2 格式。虽然 WOFF2 体积更小，但 `vite-plugin-font` 对 TTF 的子集化效果已经很好，且 TTF 兼容性更佳。
+:::
+
+### Q: 可以使用 Google Fonts 等在线字体吗？
+
+可以，但不推荐。在线字体有以下缺点：
+
+- 增加 DNS 查询和网络请求
+- 某些地区访问受限
+- 无法进行子集化优化
+
+如果确实要用，在 `src/layouts/Layout.astro` 的 `<head>` 中添加：
+
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC&display=swap" rel="stylesheet" />
+```
+
+然后在 CSS 中使用：
+
+```css
+body {
+  font-family: "Noto Sans SC", sans-serif;
+}
+```
+
+### Q: 字体授权问题？
+
+主题默认字体均为开源字体：
+
+- **LXGW WenKai**：SIL Open Font License 1.1
+- **Maple Mono CN**：SIL Open Font License 1.1
+
+如果使用商业字体，请确保你拥有 Web 使用授权。

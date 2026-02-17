@@ -1,0 +1,285 @@
+---
+title: MDX 扩展组件
+description: ShokaX 主题提供的丰富 MDX 组件使用指南
+---
+
+ShokaX 主题为 MDX 文件提供了丰富的扩展组件，让你能在文章中轻松实现隐藏内容、提示卡片、文本装饰等效果。
+
+:::tip[什么是 MDX？]
+MDX 是 Markdown 的超集，允许你在 Markdown 中直接使用 JSX/组件。主题已经自动导入所有扩展组件，你可以在 `.mdx` 文章中直接使用，无需手动导入。
+:::
+
+## 隐藏内容（Spoiler）
+
+用于隐藏剧透、答案等需要点击才能查看的内容。
+
+### 行内语法（推荐）
+
+使用 `!!内容!!` 语法快速创建行内隐藏内容：
+
+```mdx
+这是普通文字，这里有个隐藏内容：!!剧透警告：主角最后赢了!!
+```
+
+效果：鼠标悬停会显示提示"..."，点击后显示内容。
+
+### 组件语法
+
+对于更复杂的内容，可以使用组件：
+
+```mdx
+<Spoiler>这是默认隐藏的内容</Spoiler>
+
+<Spoiler title="点击查看答案">答案是 42</Spoiler>
+```
+
+**Props：**
+
+- `title`（可选）：悬停提示文本，默认 `"..."`
+
+## 提示卡片（Note）
+
+用于突出显示重要信息、提示、警告等内容。
+
+### 基础用法
+
+```mdx
+<Note type="primary" title="重点提示">
+  这是一个主色调的提示卡片。
+</Note>
+```
+
+### 五种类型
+
+主题提供了 5 种配色的提示卡片：
+
+```mdx
+<Note type="primary" title="主色提示">
+  适合突出核心内容（紫色主题）。
+</Note>
+
+<Note type="info" title="信息说明">
+  适合补充说明信息（蓝色主题）。
+</Note>
+
+<Note type="success" title="操作成功">
+  适合成功状态提醒（绿色主题）。
+</Note>
+
+<Note type="warning" title="注意事项">
+  适合重要注意事项（黄色主题）。
+</Note>
+
+<Note type="danger" title="风险提示">
+  适合错误或危险警告（红色主题）。
+</Note>
+```
+
+### 无标题卡片
+
+省略 `title` 属性即可：
+
+```mdx
+<Note type="info">这是一个没有标题的提示卡片。</Note>
+```
+
+**Props：**
+
+- `type`（可选）：卡片类型，可选值 `primary` / `info` / `success` / `warning` / `danger`，默认 `primary`
+- `title`（可选）：卡片标题
+- `icon`（可选）：自定义图标类名，设为 `"none"` 隐藏图标
+
+## 下划线装饰（Underline）
+
+提供三种下划线变体：普通下划线、波浪线、着重点。
+
+### 基础用法
+
+```mdx
+<Underline>普通下划线</Underline>
+<Underline variant="wavy">波浪线</Underline>
+<Underline variant="dot">着重点</Underline>
+```
+
+### 带颜色的下划线
+
+结合 `type` 属性使用主题配色：
+
+```mdx
+<Underline type="primary">紫色下划线</Underline>
+<Underline variant="wavy" type="success">
+  绿色波浪线
+</Underline>
+<Underline variant="dot" type="warning">
+  黄色着重点
+</Underline>
+```
+
+**Props：**
+
+- `variant`（可选）：线型，可选值 `default` / `wavy` / `dot`，默认 `default`
+- `type`（可选）：配色，可选值 `primary` / `info` / `success` / `warning` / `danger`，默认 `primary`
+
+## 删除线（Strike）
+
+```mdx
+<Strike>普通删除线</Strike>
+<Strike type="danger">红色删除线</Strike>
+```
+
+**Props：**
+
+- `type`（可选）：配色，可选值同 Note 组件
+
+## 荧光高亮（Highlight）
+
+```mdx
+<Highlight>这段文字会有荧光笔效果</Highlight>
+```
+
+## 彩色文字（Text）
+
+提供多种颜色和彩虹渐变效果。
+
+### 基础颜色
+
+```mdx
+<Text type="red">红色文字</Text>
+<Text type="pink">粉色文字</Text>
+<Text type="orange">橙色文字</Text>
+<Text type="yellow">黄色文字</Text>
+<Text type="green">绿色文字</Text>
+<Text type="aqua">靛青文字</Text>
+<Text type="blue">蓝色文字</Text>
+<Text type="purple">紫色文字</Text>
+<Text type="grey">灰色文字</Text>
+```
+
+### 彩虹渐变
+
+```mdx
+<Text type="rainbow">赤橙黄绿青蓝紫</Text>
+```
+
+**Props：**
+
+- `type`（必填）：颜色名称或 `rainbow`
+
+## 标签（Label）
+
+用于显示小标签，类似徽章效果（无图标版 Note）。
+
+```mdx
+<Label type="primary">Primary</Label>
+<Label type="info">Info</Label>
+<Label type="success">Success</Label>
+<Label type="warning">Warning</Label>
+<Label type="danger">Danger</Label>
+```
+
+**Props：**
+
+- `type`（可选）：配色，可选值同 Note
+
+## 快捷键（Kbd）
+
+用于显示键盘按键。
+
+```mdx
+按 <Kbd>Ctrl</Kbd> + <Kbd>K</Kbd> 打开搜索。
+```
+
+## 上标与下标（Sup / Sub）
+
+用于数学公式、化学式等场景。
+
+```mdx
+x<Sup>2</Sup> + y<Sup>2</Sup> = z<Sup>2</Sup> 是勾股定理。
+
+H<Sub>2</Sub>O 是水，CO<Sub>2</Sub> 是二氧化碳。
+```
+
+## 折叠内容（Collapse）
+
+用于隐藏长篇内容，点击展开查看。
+
+### 基础用法
+
+```mdx
+<Collapse title="点击展开">这里是折叠的内容，可以很长...</Collapse>
+```
+
+### 默认展开
+
+```mdx
+<Collapse title="默认展开的折叠块" open>
+  这个折叠块默认是展开状态。
+</Collapse>
+```
+
+### 带配色的折叠块
+
+```mdx
+<Collapse title="成功提示" type="success" open>
+  这是一个带绿色主题的折叠块。
+</Collapse>
+
+<Collapse title="警告信息" type="warning">
+  这是一个带黄色主题的折叠块。
+</Collapse>
+```
+
+**Props：**
+
+- `title`（可选）：折叠块标题，默认 `"折叠内容"`
+- `open`（可选）：是否默认展开，默认 `false`
+- `type`（可选）：配色，可选值同 Note
+
+## 组合使用示例
+
+MDX 组件可以嵌套和组合使用：
+
+```mdx
+<Note type="info" title="数学小知识">
+  勾股定理：在直角三角形中，a<Sup>2</Sup> + b<Sup>2</Sup> = c<Sup>2</Sup>。
+
+  <Collapse title="更多信息">
+    <Underline variant="wavy" type="success">这里有更详细的说明</Underline>，
+    但涉及剧透：!!答案是 √(a² + b²)!!
+  </Collapse>
+</Note>
+```
+
+## 注意事项
+
+### 1. 仅在 MDX 文件中使用
+
+这些组件只能在 `.mdx` 文件中使用，普通 `.md` Markdown 文件不支持。
+
+### 2. 语法高亮
+
+某些编辑器可能无法正确高亮 MDX 语法。推荐安装 MDX 语法支持插件（如 VS Code 的 "MDX" 扩展）。
+
+### 3. 行内 vs 块级
+
+- **行内组件**：Spoiler、Label、Underline、Strike、Highlight、Text、Kbd、Sup、Sub
+- **块级组件**：Note、Collapse
+
+块级组件前后需要空行，行内组件可以直接嵌入文字中。
+
+### 4. Spoiler 的转义
+
+如果你需要输出字面的 `!!`，可以使用转义：`\!!`
+
+```mdx
+这样写 \!!不会被转换\!!，会显示为普通的 !!
+```
+
+## 完整示例文件
+
+查看主题仓库中的示例文件：
+
+- `src/posts/note-mdx-demo.mdx`：展示所有 Note 组件变体
+- `src/posts/spoiler-mdx-test.mdx`：展示 Spoiler 的用法
+
+你可以直接复制这些文件作为模板来创建自己的文章。

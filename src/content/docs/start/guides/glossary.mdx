@@ -9,25 +9,20 @@ title: 术语表
 Bun 是一个为速度而生的现代 JavaScript 运行时、打包器、转译器和包管理器。它由 Zig 编写，旨在成为 Node.js 的直接替代品，通常拥有更快的启动速度和更高效的性能。
 
 安装 Bun:
-<Tabs>
-<TabItem label="Linux & MacOS">
-```bash
-curl -fsSL https://bun.sh/install | bash
-```
-</TabItem>
-<TabItem label="Windows (Powershell)">
-```bash
-powershell -c "irm bun.sh/install.ps1 | iex"
-```
-</TabItem>
-</Tabs>
 
+<Tabs>
+  <TabItem label="Linux & MacOS">```bash curl -fsSL https://bun.sh/install | bash ```</TabItem>
+  <TabItem label="Windows (Powershell)">
+    ```bash powershell -c "irm bun.sh/install.ps1 | iex" ```
+  </TabItem>
+</Tabs>
 
 ### Git
 
 Git 是目前世界上最先进的分布式版本控制系统。它用于高效地处理从很小到非常大的项目版本管理，帮助开发者跟踪代码变更、回退历史版本以及进行多人协作开发。
 
 安装 Git:
+
 <Tabs>
 <TabItem label="Windows (Winget)">
 在 Windows 10 1809 及更高版本中，可以使用 Winget 安装 Git。在Powershell中运行：
@@ -39,6 +34,7 @@ winget install --id Git.Git -e --source winget
 打开 [Git Windows 下载页](https://git-scm.com/install/windows)
 
 绝大多数情况下，点击页面中的 Click here to download 按钮即可，随后运行下载得到的文件安装
+
 </TabItem>
 <TabItem label="Linux (Debian 系)">
 适用于 Ubuntu、Debian、Linux Mint 等。在终端运行：
@@ -70,6 +66,7 @@ brew install git
 </Tabs>
 
 ### Github/Git 有关概念
+
 #### 仓库（Repository / Repo）
 
 仓库可以理解为“一个项目的家”。它通常包含：源代码、文档、图片等文件，以及这些文件的完整历史记录（每一次提交/修改）。
@@ -139,6 +136,7 @@ JavaScript 运行时就是“让 JavaScript 能在浏览器之外运行”的执
 如果你需要让同一局域网的其他设备访问，一般要让服务监听 `0.0.0.0`（或指定你的局域网 IP），并确保防火墙/路由允许对应端口访问（具体做法取决于工具与系统设置）。
 
 ### 写作 / 内容相关
+
 #### Markdown
 
 Markdown 是一种“轻量级标记语言”，用很少的符号就能写出结构化的文档内容（标题、列表、链接、代码块、引用等），并且易读、易写。

@@ -1,0 +1,450 @@
+---
+title: 部署到 Netlify
+description: 将 ShokaX 主题部署到 Netlify 平台
+---
+
+[Netlify](https://www.netlify.com) 是一个功能强大的前端部署平台，提供慷慨的免费额度和出色的开发体验。部署 ShokaX 主题到 Netlify 同样简单快捷。
+
+## 前置要求
+
+在开始之前，请确保：
+
+- ✅ 已在 [GitHub](https://github.com) / [GitLab](https://gitlab.com) / [Bitbucket](https://bitbucket.org) 上创建仓库并推送代码
+- ✅ 拥有 [Netlify 账号](https://app.netlify.com/signup)（可使用 GitHub 账号快速注册）
+- ✅ 项目中已包含 `netlify.toml` 配置文件（主题已内置）
+
+## 快速部署
+
+### 步骤 1：导入项目
+
+1. 登录 [Netlify Dashboard](https://app.netlify.com/)
+2. 点击 **"Add new site"** → **"Import an existing project"**
+
+TODO: 添加 Netlify 导入项目界面截图
+
+### 步骤 2：连接 Git 仓库
+
+1. 选择你的 Git 提供商（GitHub / GitLab / Bitbucket）
+2. 授权 Netlify 访问你的仓库
+3. 在仓库列表中选择 ShokaX 项目
+
+TODO: 添加选择仓库界面截图
+
+:::tip[仓库权限]
+首次连接时，建议授权所有仓库访问权限，方便后续导入新项目。
+:::
+
+### 步骤 3：配置构建设置
+
+Netlify 会自动读取 `netlify.toml` 配置文件，通常无需手动修改。
+
+**默认配置**：
+
+- **Base directory**: （留空）
+- **Build command**: `bun install && bun run build`
+- **Publish directory**: `dist`
+
+TODO: 添加构建配置界面截图
+
+:::note[自动检测]
+Netlify 会自动检测 Astro 框架。如果配置不正确，请确保项目根目录存在 `netlify.toml` 文件。
+:::
+
+### 步骤 4：配置站点名称（可选）
+
+在 **Site settings** 中，你可以自定义站点子域名：
+
+- 默认：`random-name-123456.netlify.app`
+- 自定义：`your-blog-name.netlify.app`
+
+TODO: 添加站点名称配置界面截图
+
+### 步骤 5：部署
+
+1. 检查配置无误后，点击 **"Deploy site"** 按钮
+2. Netlify 自动开始构建和部署
+3. 等待 1-3 分钟，构建完成后会显示部署成功页面
+
+TODO: 添加部署进度界面截图
+
+🎉 **恭喜！** 你的 ShokaX 站点已成功部署到 Netlify！
+
+## 配置说明
+
+### netlify.toml 文件
+
+项目根目录的 `netlify.toml` 文件定义了 Netlify 部署配置：
+
+```toml title="netlify.toml"
+[build]
+framework = "astro"
+command = "bun install && bun run build"
+publish = "dist"
+
+[[headers]]
+for = "/_astro/*"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+for = "/*"
+[headers.values]
+Content-Security-Policy = "frame-ancestors 'none';"
+X-Frame-Options = "DENY"
+```
+
+**配置说明**：
+
+#### [build] 部分
+
+| 字段        | 值                             | 说明                                          |
+| ----------- | ------------------------------ | --------------------------------------------- |
+| `framework` | `astro`                        | 指定框架类型                                  |
+| `command`   | `bun install && bun run build` | 构建命令（含依赖安装 + 构建 + Pagefind 索引） |
+| `publish`   | `dist`                         | 发布目录                                      |
+
+:::tip[构建命令]
+Netlify 的构建命令需要显式包含 `bun install`，因为 Netlify 不会自动安装依赖（除非使用 Node.js）。
+:::
+
+#### [[headers]] 部分
+
+**1. 静态资源缓存**（`/_astro/*`）
+
+- `Cache-Control: public, max-age=31536000, immutable`
+- 静态资源缓存 1 年，不可变
+- 大幅提升二次访问速度
+
+**2. 安全策略**（所有页面）
+
+- `Content-Security-Policy: frame-ancestors 'none'`：禁止被嵌入 iframe
+- `X-Frame-Options: DENY`：防止点击劫持攻击
+
+### astro.config.mjs 配置
+
+确保 `astro.config.mjs` 中的 `site` 字段配置正确：
+
+```javascript title="astro.config.mjs"
+export default defineConfig({
+  site: "https://your-blog-name.netlify.app", // 或你的自定义域名
+  // ...其他配置
+});
+```
+
+## 自动部署
+
+Netlify 默认启用 **持续部署（Continuous Deployment）**：
+
+- ✅ **推送到主分支** → 自动触发生产环境部署
+- ✅ **推送到其他分支** → 自动创建预览部署（Deploy Preview）
+- ✅ **创建 Pull Request** → 自动为 PR 创建预览链接
+
+**工作流程**：
+
+```bash
+# 本地修改内容
+echo "新文章内容" > src/posts/new-post.md
+
+# 提交并推送
+git add .
+git commit -m "添加新文章"
+git push origin main
+
+# Netlify 自动触发部署（1-3 分钟后生效）
+```
+
+:::tip[Deploy Preview]
+Netlify 会在 Pull Request 中自动添加预览链接评论，方便团队协作时预览效果。
+:::
+
+## 自定义域名
+
+### 添加域名
+
+1. 进入站点的 **Site settings** → **Domain management**
+2. 点击 **"Add custom domain"**
+3. 输入你的域名（如 `blog.example.com` 或 `example.com`）
+4. 点击 **"Verify"**
+
+TODO: 添加自定义域名设置界面截图
+
+### 配置 DNS
+
+Netlify 提供两种 DNS 配置方式：
+
+#### 方式 1：使用 Netlify DNS（推荐）
+
+**优点**：
+
+- 自动配置，无需手动设置
+- 免费的 DNS 服务
+- 集成 HTTPS 证书
+
+**步骤**：
+
+1. 在域名注册商处，将 NS 记录指向 Netlify
+2. Netlify 会自动管理所有 DNS 记录
+
+TODO: 添加 Netlify DNS 配置界面截图
+
+#### 方式 2：使用外部 DNS
+
+在你的域名服务商处添加 DNS 记录：
+
+**子域名（如 blog.example.com）**：
+
+| 类型  | 名称   | 值                           |
+| ----- | ------ | ---------------------------- |
+| CNAME | `blog` | `your-site-name.netlify.app` |
+
+**根域名（如 example.com）**：
+
+| 类型 | 名称 | 值                            |
+| ---- | ---- | ----------------------------- |
+| A    | `@`  | `75.2.60.5`                   |
+| AAAA | `@`  | `2600:1408:800:491::2c7:5a00` |
+
+或者使用 ALIAS 记录（如果你的 DNS 提供商支持）：
+
+| 类型  | 名称 | 值                           |
+| ----- | ---- | ---------------------------- |
+| ALIAS | `@`  | `your-site-name.netlify.app` |
+
+TODO: 添加外部 DNS 配置示例截图
+
+:::caution[DNS 生效时间]
+DNS 配置生效通常需要 **5 分钟到 48 小时**。可以使用 [DNS Checker](https://dnschecker.org/) 检查生效状态。
+:::
+
+### HTTPS 证书
+
+Netlify 自动为所有域名提供免费的 SSL 证书（Let's Encrypt）。
+
+添加域名后，Netlify 会自动：
+
+1. 验证域名所有权
+2. 申请 SSL 证书
+3. 启用 HTTPS
+4. 强制 HTTPS 重定向（可在设置中开启）
+
+**强制 HTTPS**：
+
+进入 **Site settings** → **Domain management** → **HTTPS**，启用 **"Force HTTPS"**。
+
+## 环境变量
+
+### 添加环境变量
+
+1. 进入站点的 **Site settings** → **Environment variables**
+2. 点击 **"Add a variable"** 或 **"Add environment variables"**
+3. 输入变量名和值
+4. 选择作用域（All scopes / Production / Deploy Previews / Branch deploys）
+5. 点击 **"Create variable"**
+
+TODO: 添加环境变量配置界面截图
+
+**示例**：
+
+| 变量名     | 值                       | 作用域     |
+| ---------- | ------------------------ | ---------- |
+| `SITE_URL` | `https://yourdomain.com` | Production |
+| `NODE_ENV` | `production`             | Production |
+
+### 在代码中使用
+
+```javascript title="astro.config.mjs"
+export default defineConfig({
+  site: process.env.SITE_URL || "https://yourdomain.com",
+});
+```
+
+:::note[环境变量前缀]
+Astro 中，只有以 `PUBLIC_` 开头的环境变量会暴露给客户端代码。其他变量仅在构建时可用。
+:::
+
+## 性能优化
+
+### 1. 全球 CDN
+
+Netlify 的 Edge Network 默认启用，你的站点会自动分发到全球 CDN 节点。
+
+**覆盖范围**：
+
+- 🌏 亚洲（新加坡、东京、香港）
+- 🌍 欧洲（伦敦、法兰克福）
+- 🌎 美洲（纽约、旧金山、圣保罗）
+
+### 2. 构建缓存
+
+Netlify 会自动缓存依赖和构建产物，加快后续部署速度。
+
+**首次部署**：约 3-5 分钟  
+**后续部署**：约 1-2 分钟
+
+如需清除缓存，可以在部署设置中点击 **"Clear cache and retry deploy"**。
+
+### 3. 图片优化
+
+Netlify 提供 Image CDN 功能（付费功能），可以：
+
+- 自动格式转换（WebP、AVIF）
+- 响应式调整尺寸
+- 智能压缩
+
+免费版可以使用 Astro 的 `<Image />` 组件实现类似效果。
+
+### 4. 预渲染优化
+
+ShokaX 使用静态生成（SSG），Netlify 会直接提供 HTML 文件，响应速度极快。
+
+**Lighthouse 评分参考**：
+
+- Performance: 95-100
+- Accessibility: 95-100
+- Best Practices: 95-100
+- SEO: 95-100
+
+## 常见问题
+
+### Q: 构建失败，提示 "Command failed"？
+
+**可能原因**：
+
+1. 构建命令错误
+2. Bun 未正确安装
+3. 依赖安装失败
+
+**解决方案**：
+
+检查 `netlify.toml` 中的构建命令：
+
+```toml title="netlify.toml"
+[build]
+command = "bun install && bun run build"  # 确保包含 bun install
+```
+
+如果问题仍然存在，查看部署日志中的详细错误信息。
+
+### Q: 搜索功能不可用？
+
+**原因**：构建命令未包含 Pagefind 索引生成。
+
+**解决方案**：
+
+确认 `package.json` 中的 `build` 脚本包含索引生成：
+
+```json title="package.json"
+{
+  "scripts": {
+    "build": "bun run build:site && bun run build:index"
+  }
+}
+```
+
+### Q: 部署成功但页面 404？
+
+**可能原因**：
+
+1. `publish` 目录配置错误
+2. 构建未生成文件
+
+**解决方案**：
+
+1. 检查 `netlify.toml` 中的 `publish` 字段是否为 `dist`
+2. 查看部署日志，确认构建成功
+3. 检查 `dist/` 目录是否包含 `index.html`
+
+### Q: 如何回滚到之前的版本？
+
+1. 进入站点的 **Deploys** 标签
+2. 找到之前成功的部署
+3. 点击 **"Publish deploy"** 按钮
+
+TODO: 添加回滚操作界面截图
+
+### Q: 构建时间过长（超过 5 分钟）？
+
+**可能原因**：
+
+- 文章数量太多（> 500 篇）
+- 字体文件过大（未开启子集化）
+- 依赖安装缓慢
+
+**优化建议**：
+
+1. 启用字体子集化（参考[字体配置文档](/features/fonts/)）
+2. 检查是否有不必要的大文件
+3. 使用 Netlify 的构建插件优化
+
+### Q: 如何删除站点？
+
+1. 进入站点的 **Site settings** → **General**
+2. 滚动到底部，找到 **"Delete site"**
+3. 输入站点名称确认删除
+
+:::caution[删除不可恢复]
+删除站点会永久删除所有部署记录、域名配置和环境变量，且无法恢复。
+:::
+
+### Q: Netlify 和 Vercel 哪个更好？
+
+**选择建议**：
+
+**选择 Netlify**：
+
+- ✅ 需要表单提交功能
+- ✅ 需要分支部署
+- ✅ 更新频率低（免费构建时间少）
+
+**选择 Vercel**：
+
+- ✅ 更新频率高（更多构建时间）
+- ✅ 需要 Next.js 等框架的深度集成
+- ✅ 偏好 Vercel 的 Dashboard UI
+
+对于 ShokaX 主题，**两者功能基本相同**，可以根据个人喜好选择。
+
+## 故障排查
+
+### 部署日志显示 "Build exceeded maximum allowed runtime"
+
+**原因**：构建时间超过了 Netlify 的时间限制（免费版单次最长 15 分钟）。
+
+**解决方案**：
+
+1. 优化构建流程（减少不必要的操作）
+2. 减少文章数量（分批发布）
+3. 升级到付费版（单次最长 30 分钟）
+
+### 静态资源加载失败（404）
+
+**原因**：静态资源路径不正确。
+
+**解决方案**：
+
+确保 `astro.config.mjs` 中的 `base` 配置正确：
+
+```javascript title="astro.config.mjs"
+export default defineConfig({
+  site: "https://yoursite.netlify.app",
+  // base: "/",  // 通常不需要配置 base
+});
+```
+
+### Headers 不生效
+
+**原因**：`netlify.toml` 配置错误或被覆盖。
+
+**解决方案**：
+
+1. 检查 `netlify.toml` 语法是否正确（TOML 格式）
+2. 确保文件在项目根目录
+3. 使用 Netlify 的 [Headers tester](https://www.netlify.com/pricing/headers-tester/) 验证
+
+## 相关资源
+
+- [Netlify 官方文档](https://docs.netlify.com/)
+- [Netlify CLI 文档](https://docs.netlify.com/cli/get-started/)
+- [Astro + Netlify 部署指南](https://docs.astro.build/en/guides/deploy/netlify/)
+- [Netlify 状态页面](https://www.netlifystatus.com/)
+- [Netlify Community Forum](https://answers.netlify.com/)

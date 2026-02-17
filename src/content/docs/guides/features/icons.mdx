@@ -1,0 +1,279 @@
+---
+title: 图标系统
+description: 使用 UnoCSS + Iconify 快速集成图标
+---
+
+ShokaX 主题内置了强大的图标系统，基于 **UnoCSS** 和 **Iconify**，让你可以在配置文件和组件中轻松使用数千个精美图标。
+
+## 图标系统简介
+
+主题默认使用 **Remix Icon** 图标集，这是一套设计精美、风格统一的开源图标库，包含 2000+ 个图标，涵盖常见的界面、社交、文件、设备等类别。
+
+**核心特性**：
+
+- 🎨 **开箱即用** - 无需安装额外配置，直接使用
+- 🚀 **按需加载** - 只打包实际使用的图标，体积极小
+- 🔧 **配置简单** - 在主题配置中填写图标类名即可
+- 🎯 **类型安全** - TypeScript 提供完整的类型支持
+- 🌈 **扩展灵活** - 支持添加其他 Iconify 图标集
+
+## 快速开始
+
+### 1. 在配置文件中使用图标
+
+最常见的用途是在 `theme.config.ts` 的导航栏和侧边栏配置中使用图标。
+
+**导航栏示例**：
+
+```ts title="src/theme.config.ts"
+export default defineConfig({
+  nav: [
+    {
+      text: "首页",
+      href: "/",
+      icon: "i-ri-home-line", // 图标类名
+    },
+    {
+      text: "关于",
+      href: "/about/",
+      icon: "i-ri-user-smile-line",
+    },
+  ],
+});
+```
+
+**侧边栏社交链接示例**：
+
+```ts title="src/theme.config.ts"
+export default defineConfig({
+  sidebar: {
+    social: {
+      github: {
+        url: "https://github.com/yourname",
+        icon: "i-ri-github-fill", // 图标类名
+      },
+      email: {
+        url: "mailto:your@email.com",
+        icon: "i-ri-mail-line",
+      },
+    },
+  },
+});
+```
+
+### 2. 在组件中使用图标
+
+在 `.astro`、`.svelte` 或其他组件中，使用标准的 HTML 标签加上图标类名即可：
+
+```astro title="src/components/MyComponent.astro"
+---
+// Astro 组件
+---
+
+<button>
+  <i class="i-ri-arrow-up-line"></i>
+  返回顶部
+</button>
+```
+
+```svelte title="src/components/MyComponent.svelte"
+<!-- Svelte 组件 -->
+<button type="button">
+  <i class="i-ri-arrow-up-line"></i>
+  返回顶部
+</button>
+```
+
+:::tip[任何标签都可以]
+图标类名可以用在任何 HTML 标签上，不限于 `<i>` 标签。主题内部也常用 `<span>` 或 `<div>`。
+:::
+
+## 图标类名规则
+
+所有 Remix Icon 的类名遵循统一格式：
+
+```
+i-ri-{图标名称}
+```
+
+**示例**：
+
+- `home-line` → `i-ri-home-line`
+- `github-fill` → `i-ri-github-fill`
+- `arrow-up-line` → `i-ri-arrow-up-line`
+
+### 如何查找图标？
+
+1. 访问 [Icones 图标搜索网站](https://icones.js.org/collection/ri)
+2. 在搜索框输入关键词（如 "home"、"mail"、"arrow"）
+3. 找到喜欢的图标后，点击复制图标名（如 `home-line`）
+4. 在类名前加上 `i-ri-` 前缀即可使用
+
+:::note[类名前缀说明]
+
+- `i-` 是 UnoCSS Icons 预设的前缀
+- `ri-` 是 Remix Icon 图标集的标识
+- 完整格式：`i-{图标集}-{图标名}`
+  :::
+
+## 图标样式自定义
+
+### 调整图标大小
+
+使用 UnoCSS 的尺寸工具类：
+
+```html
+<!-- 默认大小 (1em) -->
+<i class="i-ri-home-line"></i>
+
+<!-- 使用工具类调整 -->
+<i class="i-ri-home-line text-lg"></i>
+<!-- 大号 -->
+<i class="i-ri-home-line text-2xl"></i>
+<!-- 超大号 -->
+<i class="i-ri-home-line w-6 h-6"></i>
+<!-- 固定尺寸 24px -->
+```
+
+### 调整图标颜色
+
+图标颜色继承父元素的 `color` 属性，你可以：
+
+```html
+<!-- 使用文本颜色工具类 -->
+<i class="i-ri-home-line text-blue-500"></i>
+<i class="i-ri-home-line text-red-600"></i>
+
+<!-- 使用 CSS 变量 -->
+<i class="i-ri-home-line" style="color: var(--color-primary);"></i>
+```
+
+### 组合使用
+
+```html
+<button class="flex items-center gap-2">
+  <i class="i-ri-search-line text-xl"></i>
+  <span>搜索</span>
+</button>
+```
+
+## 进阶：添加其他图标集
+
+如果 Remix Icon 不能满足需求，你可以添加其他 Iconify 图标集。
+
+### 步骤 1：安装图标集数据包
+
+以添加 **Material Design Icons** 为例：
+
+```bash
+bun add -d @iconify-json/mdi
+```
+
+:::tip[查找更多图标集]
+访问 [Iconify 图标集列表](https://icon-sets.iconify.design/) 查看所有可用图标集。
+每个图标集对应的包名格式为 `@iconify-json/{图标集ID}`。
+:::
+
+### 步骤 2：直接使用
+
+安装后无需额外配置，直接使用对应的类名：
+
+```html
+<!-- Material Design Icons -->
+<i class="i-mdi-home"></i>
+<i class="i-mdi-account"></i>
+
+<!-- Font Awesome -->
+<i class="i-fa-home"></i>
+<i class="i-fa-user"></i>
+```
+
+类名格式：`i-{图标集ID}-{图标名}`
+
+## 技术原理：Safelist 机制
+
+主题使用了智能的 **safelist** 机制来确保配置文件中的图标被正确编译。
+
+### 工作原理
+
+在 `uno.config.ts` 中，主题会自动：
+
+1. 扫描 `theme.config.ts` 中所有的 `icon` 字段
+2. 将这些图标类名加入 UnoCSS 的 safelist
+3. 确保这些图标在构建时不会被遗漏
+
+```ts title="uno.config.ts" {6-38}
+import { defineConfig, presetIcons, presetWind4 } from "unocss";
+import themeConfig from "./src/theme.config";
+
+// 从配置中提取所有图标类名
+const iconSafeList = themeConfig.nav.flatMap((item) => {
+  const icons: string[] = [];
+  if (item.icon) {
+    icons.push(item.icon);
+  }
+  if (item.dropboxItems) {
+    item.dropboxItems.forEach((subItem) => {
+      if (subItem.icon) {
+        icons.push(subItem.icon);
+      }
+    });
+  }
+  return icons;
+});
+
+// ... 处理 sidebar 中的图标
+
+export default defineConfig({
+  presets: [presetWind4(), presetIcons()],
+  safelist: [...new Set(iconSafeList)], // 加入 safelist
+});
+```
+
+### 为什么需要 Safelist？
+
+UnoCSS 采用按需生成策略，只会编译扫描到的类名。但配置文件中的字符串不会被扫描器识别，因此需要手动加入 safelist。
+
+:::note[组件中的图标无需 safelist]
+在 `.astro`、`.svelte` 等文件中直接写的图标类名会被 UnoCSS 自动扫描，无需添加到 safelist。
+:::
+
+## 常见问题
+
+### 图标不显示？
+
+**可能的原因**：
+
+1. **类名拼写错误** - 检查是否正确使用 `i-ri-` 前缀
+2. **图标名错误** - 去 Icones 网站确认图标名是否正确
+3. **Safelist 未生效** - 如果在配置文件中使用，检查 `uno.config.ts` 的 safelist 逻辑
+
+**调试方法**：
+
+- 在浏览器开发者工具中检查元素，查看类名是否被应用
+- 查看生成的 CSS 文件，搜索图标类名是否存在
+
+### 如何替换默认图标集？
+
+如果你想完全使用其他图标集（如 Font Awesome），你需要：
+
+1. 安装对应的 `@iconify-json/{图标集}` 包
+2. 修改 `theme.config.ts` 中所有的 `icon` 字段
+3. 更新 `uno.config.ts` 中的 safelist 逻辑（如果图标前缀不是 `i-ri-`）
+
+## 配置速查表
+
+| 使用场景    | 配置位置                                     | 类名格式      | 示例                                 |
+| :---------- | :------------------------------------------- | :------------ | :----------------------------------- |
+| 导航栏菜单  | `theme.config.ts` → `nav[].icon`             | `i-ri-{name}` | `i-ri-home-line`                     |
+| 侧边栏社交  | `theme.config.ts` → `sidebar.social.{}.icon` | `i-ri-{name}` | `i-ri-github-fill`                   |
+| Astro 组件  | 模板中直接使用 `class`                       | `i-ri-{name}` | `<i class="i-ri-mail-line"></i>`     |
+| Svelte 组件 | 模板中直接使用 `class`                       | `i-ri-{name}` | `<i class="i-ri-arrow-up-line"></i>` |
+
+## 相关资源
+
+- [Icones 图标搜索](https://icones.js.org/collection/ri) - 搜索 Remix Icon
+- [Iconify 官网](https://iconify.design/) - 查看所有可用图标集
+- [UnoCSS Icons 预设文档](https://unocss.dev/presets/icons) - 了解技术细节
+- [导航栏配置文档](/configs/navbar/) - 查看导航栏中如何使用图标
+- [侧边栏配置文档](/configs/sidebar/) - 查看侧边栏中如何使用图标
