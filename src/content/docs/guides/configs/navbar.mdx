@@ -50,36 +50,33 @@ export default defineConfig({
   nav: [
     // ...
     {
-      text: "文章归档",
-      href: "/posts/", // 点击父级菜单跳转的地址
+      text: "文章",
+      href: "/posts/",
       icon: "i-ri-quill-pen-fill",
-      dropbox: true, // 启用下拉功能
-      dropboxItems: [
-        {
-          text: "分类",
-          href: "/categories/",
-          icon: "i-ri-book-shelf-fill",
-        },
-        {
-          text: "标签",
-          href: "/tags/",
-          icon: "i-ri-price-tag-3-fill",
-        },
-      ],
+      dropbox: {
+        enable: true, // 启用下拉菜单
+        items: [ // 子菜单内容
+          {
+            href: "/categories/",
+            text: "分类",
+            icon: "i-ri-book-shelf-fill",
+          },
+          {
+            href: "/tags/",
+            text: "标签",
+            icon: "i-ri-price-tag-3-fill",
+          },
+          {
+            href: "/archives/",
+            text: "归档",
+            icon: "i-ri-archive-line",
+          },
+        ],
+      },
     },
   ],
 });
 ```
-
-## 配置项详解
-
-| 属性名         | 类型        | 说明                                                |
-| :------------- | :---------- | :-------------------------------------------------- |
-| `text`         | `string`    | **必填**。显示的标题文字。                          |
-| `href`         | `string`    | **必填**。链接地址。站内链接建议以 `/` 开头和结尾。 |
-| `icon`         | `string`    | **可选**。图标类名。                                |
-| `dropbox`      | `boolean`   | **可选**。是否为下拉菜单容器。                      |
-| `dropboxItems` | `NavItem[]` | **可选**。子菜单项列表，结构与普通菜单项一致。      |
 
 ## 关于图标
 

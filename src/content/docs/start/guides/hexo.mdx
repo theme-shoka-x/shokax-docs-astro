@@ -1,3 +1,381 @@
 ---
 title: 从 Hexo 迁移
 ---
+
+## 建议流程
+
+该文档为了保证迁移流程的顺畅，会包括很多技术细节，如果您不想阅读可以直接丢给 AI，大部分 AI Agent 在该指南及文档的指导下都能自行完成约70%的迁移工作
+
+总体上而言，建议流程：
+1. 参照快速开始新建 Astro 环境
+2. 将 Hexo 的文章复制过去
+3. 修改文章的语法和格式错误
+4. 迁移配置
+5. 编写新旧路由的重定向
+6. 重新部署
+
+## 迁移检查单
+
+您可以通过该单得知您博客的迁移难度，以最高选项为准：
+
+低难度：
+- 默认模板，未经修改
+- 不了解 Vite / Astro 工具链
+
+中难度：
+- 使用了 ShokaX MD 扩展（如`:::`和`;;;`）
+- 使用了不规范的 frontmatter（如`tags`后直接接 string）
+- 使用了 Hexo 插件
+- 未使用持续依赖构建博客
+- 没有学习过 Javascript
+- 首页封面图有非常多张
+
+高难度
+- 使用了强依赖 Hexo 的特性
+- 使用了练习题、注音和文字特效三个 Markdown 扩展
+- 存在自定义页面
+- 存在自定义组件
+
+极高难度：
+- 对 ShokaX Hexo 进行了大量修改
+
+## 核心架构迁移
+
+迁移到 ShokaX Astro 意味着您的博客架构需要进行重大变动，底层架构变更包括：
+- 博客框架从 Hexo 迁移到 Astro
+- 文章管理系统从 Hexo-CLI 迁移到 Hyacine-CLI
+- 模板语言从 Pug 迁移到 Astro + Svelte
+- 资源和构建系统管线从 Hexo 迁移到 Astro + Vite
+
+且 ShokaX 对技术架构和内部实现进行整体重构
+
+这意味着您在先前在 ShokaX Hexo 上的修改几乎会全部失效，您可能需要从零重新构建您的修改部分
+
+所以，这里包括对于核心内容的迁移指南，高级部分需参考文档和 API 解决
+
+我们建议的迁移方式是使用交互式安装新建环境，然后参照指南将 Hexo 中的内容逐步迁移到新 Astro 博客中
+
+### 运行时修改
+
+ShokaX Astro 使用 Bun 作为运行时，这个运行时基本上和 Node 兼容，同时提供了很多其他功能
+
+您需要使用`bun`作为包管理器，同时，主流托管平台均支持该运行时
+
+参照“术语表”安装即可，无需其他操作
+
+### 图标系统
+
+在 Hexo 版本中，图标系统使用 Iconfont 完成，而 Astro 版本则使用了 UnoCSS 完成
+
+不同于 Iconfont 基于字体的加载方式，UnoCSS 基于 SVG 进行图标按需加载，这意味着：
+- 不再需要手动添加图标到 Iconfont 项目
+- 不再需要手动设置图标 CSS
+- 不再需要手动替换字体地址
+- 不再需要全量加载图标
+
+默认情况下，ShokaX Astro 使用 [RemixIcon](https://remixicon.com/) 作为默认图标预设集，您可以自由使用其中的图标，或者添加其他图标集
+
+由于先前的 Iconfont 项目存在诸多分支，我们无法提供批量迁移指南，您可以使用安装了 RemixIcon MCP 的 Agent 完成此步骤，或手动替换
+
+具体参见：[图标文档](/guides/configs/icons)
+
+### 插件系统
+
+在 Hexo 版本中，可以安装 Hexo 插件来扩展功能
+
+而 Astro 版本中，插件系统则扩展到了 Hyacine Plugins + Astro Integration + Vite Plugins，您可以在 npm 上搜索您需要的软件包，并按照其各自的安装指南部署
+
+ShokaX Astro 已经整合了一些软件包和插件，您无需安装它们：
+- ShokaX Markdown 渲染器扩展
+- Font 压缩优化引擎（vite-plugin-font）
+- Sitemap 生成
+- CSS 自动行内和延迟优化
+
+Hyacine Plugins 目前仍处于 Alpha 阶段，文档正在编写。默认的 ShokaX Astro Preview 使用了 SiteUpTime（建站时间）和 MouseFirework（点击特效）两个 HyC 插件
+
+### 文章系统
+
+在 Hexo 中，Hexo 作为无头 CMS 负责管理文章，而 Astro 中该任务由 ShokaX 自行负责
+
+ShokaX Astro 的两者官方文章编写语言为 Markdown 和 MDX，其中 MDX 支持 ShokaX 扩展，Markdown 扩展仍在开发中
+
+将 Markdown 转移到 MDX 只需要将文件后缀名由`.md`改为`.mdx`即可，扩展内容见文档中的 MDX 扩展内容
+
+## 配置
+### 配置语言
+
+在 Hexo 版本中，您需要在`_config.yml `中使用 YAML 语言进行配置
+
+而 Astro 版本中，配置文件变为了`src/theme.config.ts`，基于 Typescript 语言进行配置，并使用 defineConfig 来确保类型安全。这样就可以避免配置放错位置和无效配置两大问题
+
+对配置的迁移涉及很多内容，下面列出一些较为复杂的部分
+
+### 导航栏和社交链接
+
+在 Hexo 版本中，导航栏使用 ShokaX Classic 配置格式，形如：
+```yml
+menu:
+  home: / || home
+  posts:
+    default: / || feather
+    archives: /archives/ || list-alt
+    categories: /categories/ || th
+    tags: /tags/ || tags
+  friends: /friends/ || heart
+```
+
+在这种配置格式中，键（如home、posts）代表导航栏对应的翻译键，`||`前代表导航链接，`||`后代表导航按钮图标
+
+这种配置格式存在文本与配置分离、不直观和反直觉等问题，为此，我们在 Astro 版本中切换到了 ShokaX Modern 格式：
+```ts
+// 这是两份等效的配置
+nav: [
+    {
+      href: "/",
+      text: "首页",
+      icon: "i-ri-home-line",
+    },
+    {
+      text: "文章",
+      href: "/posts/",
+      icon: "i-ri-quill-pen-fill",
+      dropbox: {
+        enable: true,
+        items: [
+          {
+            href: "/categories/",
+            text: "分类",
+            icon: "i-ri-book-shelf-fill",
+          },
+          {
+            href: "/tags/",
+            text: "标签",
+            icon: "i-ri-price-tag-3-fill",
+          },
+          {
+            href: "/archives/",
+            text: "归档",
+            icon: "i-ri-archive-line",
+          },
+        ],
+      },
+    },
+    {
+      text: "友链",
+      href: "/friends/",
+      icon: "i-ri-link",
+    },
+  ],
+```
+
+text 对应先前的翻译键，href 对应链接，icon 对应图标，Dropbox 被独立出来且需要显式配置。您只需要进行转译即可得到配置
+
+您可以参考[完整指南](/guides/configs/navbar/) 了解详细变更
+
+社交链接也进行了类似的修改，参见：[sidebar](/guides/configs/sidebar/)
+
+## 文章
+### frontmatter
+
+ShokaX Astro 对 frontmatter 的校验比较严格，以下行为和 Hexo 不同：
+
+#### tags 和 categories 必须为一个一维数组
+
+换句话来说，不支持：
+```yml
+tags: ShokaX,Astro
+```
+和
+```yml
+categories:
+- [ShokaX, Astro]
+- [Foo,Bar]
+```
+这里的tags和categories都必须是一个一维数组：
+```yml
+categories:
+- ShokaX
+- Astro
+```
+
+文章多分类功能被移除，一个文章应仅存在一条分类链
+
+#### date 必须有效
+
+文章的发布时间必须是一个有效的时间
+
+#### license 规范化
+
+license 的取值必须为：
+
+- CC-BY-4.0
+- CC-BY-SA-4.0
+- CC-BY-ND-4.0
+- CC-BY-NC-4.0
+- CC-BY-NC-SA-4.0
+- CC-BY-NC-ND-4.0
+- NOREPRINT
+
+的其中一个
+
+#### cover 以 src/posts 为基准
+
+cover 属性以 src/posts 作为 `.` 而非文章本身
+
+### Markdown 扩展
+
+目前，我们仍然在积极开发 Markdown 扩展中，但 MDX 扩展已完全可用，我们在此介绍如何迁移到 MDX 及其扩展：
+
+#### 文章类型迁移
+
+将所有 .md 重命名为 .mdx 即可，我们建议使用 PowerToys 的 PowerRename 完成此工作
+
+.mdx 的语法比 .md 略微严格一些，如果出现构建错误，请检查：
+- 是否存在未闭合的 MDX 组件或尖括号
+- 是否存在 MDX 组件使用时既不是行内又不是块级
+  如：
+  ```mdx
+  <Note> xxx
+  </Note>
+  ```
+
+#### 扩展功能迁移
+
+对于块级功能：
+- `:::info` 被迁移为 `<Note type="info">`，但原先的`:::info`语法在 MDX 下仍可用
+- `:::warning`、`:::success`、`:::danger`、`:::primary` 同理，建议统一迁移到 `<Note />` 组件，后续维护更直观
+- `;;;id 标题` 标签卡语法，建议迁移为 `<Tabs>` + `<Tab>` 组件组合
+- `+++type 标题` 折叠块语法，建议迁移为 `<Collapse title="..." type="...">` 组件
+- 练习题（`quiz`）建议迁移为组件化写法：`<QuizGroup>`、`<Quiz>`、`<QuizOptions>`、`<QuizOption>`、`<QuizAnswer>`、`<QuizGap>`、`<QuizMistake>`
+- `{% links %}` / `{% linksfile %}` 标签语法在 Astro 侧不再作为文章内标签块保留，建议改为：
+  - 站点友链统一迁移到友链页面配置（主题原生支持）
+  - 文章内临时链接列表改为普通 Markdown 列表，或自行封装 MDX 组件
+- `{% media %}`（音频/视频列表）标签语法建议迁移为原生媒体元素或独立 MDX 组件（按需封装）
+
+对于行内功能：
+- `!!内容!!` 隐藏文本语法仍可用（会转换为 `Spoiler` 效果），也可直接使用 `<Spoiler>` 组件
+- `++文本++` 下划线语法仍可用；如果需要精细控制颜色/样式，建议迁移为 `<Underline>` 组件
+- `~~删除线~~` 仍可用；若需要主题色删除线，建议迁移为 `<Strike type="...">`
+- 旧版基于 attrs 的文字特效（如 `.rainbow`、`.kbd`、`.label`）建议改为对应组件：`<Text>`、`<Kbd>`、`<Label>`、`<Highlight>`
+- 任务列表 `- [ ]` / `- [x]` 可继续沿用 GFM 语法
+- 注音功能建议保留注音写法迁移
+
+#### Quiz 迁移详细指导
+
+如果你的 Hexo 文章大量使用了 `.quiz`、`.options`、`.correct`、`.gap` 这类语法，建议按“先结构、再语义、后样式”的顺序迁移：
+
+1. 先把整组题目包裹到 `<QuizGroup>` 中，确保编号和交互作用域正确。
+2. 再把每一道题迁移为 `<Quiz type="...">`，其中 `type` 对应题型。
+3. 选择题部分统一放到 `<QuizOptions>` 内，每个选项使用 `<QuizOption>`，正确项显式标记 `correct`。
+4. 解析与备注分离：解析内容放到 `<QuizAnswer>`，错题备注放到 `<QuizMistake>`。
+5. 填空题把旧的 `.gap` 写法迁移为 `<QuizGap answer="..." />`，避免答案提取不稳定。
+
+常见映射关系：
+- `.quiz`（单选）→ `<Quiz type="single">`
+- `.quiz.multi`（多选）→ `<Quiz type="multi">`
+- `.quiz.true`（判断-正确）与 `.quiz.false`（判断-错误）→ `<Quiz type="true">` / `<Quiz type="false">`
+- `.quiz.fill`（填空）→ `<Quiz type="fill">`
+- `.options` → `<QuizOptions>`
+- `.correct` → `<QuizOption correct>`
+- `[答案]{.gap}` → `<QuizGap answer="答案" />`
+
+迁移注意事项：
+- Hexo 里依赖 Front Matter 的 `quiz: true` 才显示题型标签；迁移到组件后，题型信息由 `type` 明确声明，不再依赖该开关。
+- 不要把多个题组混在同一个 `<QuizGroup>` 里，建议按章节拆分，便于后续维护和样式覆盖。
+- 迁移后优先检查三件事：编号是否连续、正确答案是否可点击反馈、解析区是否按预期显示。
+
+示例对照（旧版 → 新版）：
+
+##### 示例 1：单选题
+
+旧版（Hexo）：
+```md
+1. 下列叙述正确的是 []{.gap} 。 {.quiz}
+   - 虚函数只能定义成无参函数
+   - 虚函数不能有返回值
+   - 能定义虚构造函数
+   - A、B、C都不对 {.correct}
+{.options}
+   > 正确答案是 D。
+```
+
+新版（MDX）：
+```mdx
+<QuizGroup>
+  <Quiz type="single">
+    下列叙述正确的是 <QuizGap answer="A、B、C都不对" />。
+    <QuizOptions>
+      <QuizOption>虚函数只能定义成无参函数</QuizOption>
+      <QuizOption>虚函数不能有返回值</QuizOption>
+      <QuizOption>能定义虚构造函数</QuizOption>
+      <QuizOption correct>A、B、C都不对</QuizOption>
+    </QuizOptions>
+    <QuizAnswer>正确答案是 D。</QuizAnswer>
+  </Quiz>
+</QuizGroup>
+```
+
+##### 示例 2：多选题
+
+旧版（Hexo）：
+```md
+2. 下列哪些项是“派生类对象替换基类对象”。 {.quiz .multi}
+   - `p1=&circle1;` {.correct}
+   - `q1=&shape1;`
+   - `shape1=circle1;` {.correct}
+   - `circle1=shape1;`
+{.options}
+   > 正确答案：A、C。
+```
+
+新版（MDX）：
+```mdx
+<QuizGroup>
+  <Quiz type="multi">
+    下列哪些项是“派生类对象替换基类对象”。
+    <QuizOptions>
+      <QuizOption correct><code>p1=&circle1;</code></QuizOption>
+      <QuizOption><code>q1=&shape1;</code></QuizOption>
+      <QuizOption correct><code>shape1=circle1;</code></QuizOption>
+      <QuizOption><code>circle1=shape1;</code></QuizOption>
+    </QuizOptions>
+    <QuizAnswer>正确答案：A、C。</QuizAnswer>
+  </Quiz>
+</QuizGroup>
+```
+
+##### 示例 3：判断题
+
+旧版（Hexo）：
+```md
+3. 编译时多态主要指运算符重载与函数重载，而运行时多态主要指虚函数。 {.quiz .true}
+```
+
+新版（MDX）：
+```mdx
+<QuizGroup>
+  <Quiz type="true">
+    编译时多态主要指运算符重载与函数重载，而运行时多态主要指虚函数。
+  </Quiz>
+</QuizGroup>
+```
+
+##### 示例 4：填空题 + 错题备注
+
+旧版（Hexo）：
+```md
+10. 表达式结果为 [9.4]{.gap}。 {.quiz .fill}
+    > 注意运算顺序和数据类型
+    > [8.4]{.mistake}
+```
+
+新版（MDX）：
+```mdx
+<QuizGroup>
+  <Quiz type="fill">
+    表达式结果为 <QuizGap answer="9.4" />。
+    <QuizAnswer>注意运算顺序和数据类型。</QuizAnswer>
+    <QuizMistake>常见错误答案：8.4</QuizMistake>
+  </Quiz>
+</QuizGroup>
+```
