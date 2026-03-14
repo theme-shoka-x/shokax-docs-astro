@@ -18,7 +18,7 @@ EdgeOne Pages 是腾讯云 EdgeOne 提供的静态站点托管服务，适合部
 ### 步骤 1：创建 Pages 项目
 
 1. 打开 EdgeOne 控制台
-2. 进入 Pages（或“静态站点托管”）相关页面
+2. 进入 Pages 相关页面
 3. 点击创建新项目
 
 TODO：补充 EdgeOne 控制台的具体入口路径与截图
@@ -45,105 +45,11 @@ TODO：补充授权与选择仓库界面截图
 
 TODO：补充“构建配置”界面截图
 
-### 步骤 4：设置站点 URL（推荐）
-
-为了让 sitemap、RSS、文章永久链接等功能生成正确的绝对链接，请确保你的站点 URL 配置正确。
-
-- 方式 A：直接修改 `astro.config.mjs` 里的 `site`
-- 方式 B：通过环境变量注入（如果你在配置里做了读取）
-
-> 当前主题默认在 `astro.config.mjs` 中写死 `site`，如果你希望在不同部署平台复用同一份代码，建议改为读取环境变量。
-
-TODO：补充“如何在主题中使用 SITE_URL 环境变量”的示例（如需）
-
 ### 步骤 5：部署
 
 点击部署后，等待构建完成并访问平台提供的默认域名即可。
 
 TODO：补充部署进度与成功页面截图
-
-## edgeone.json 配置说明
-
-项目根目录的 `edgeone.json` 类似 Vercel / Netlify 的配置文件，用来描述构建与响应头策略：
-
-```json title="edgeone.json"
-{
-  "installCommand": "bun install",
-  "buildCommand": "bun run build",
-  "outputDirectory": "dist",
-  "headers": [
-    {
-      "source": "/_astro/*",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    },
-    {
-      "source": "/*",
-      "headers": [
-        {
-          "key": "Strict-Transport-Security",
-          "value": "max-age=63072000; includeSubDomains; preload"
-        },
-        {
-          "key": "Content-Security-Policy",
-          "value": "frame-ancestors 'none';"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        }
-      ]
-    }
-  ]
-}
-```
-
-### 构建相关字段
-
-| 字段              | 说明                               |
-| ----------------- | ---------------------------------- |
-| `installCommand`  | 安装依赖命令（使用 Bun）           |
-| `buildCommand`    | 构建命令（包含 Pagefind 索引生成） |
-| `outputDirectory` | 输出目录（Astro 默认 `dist`）      |
-
-### headers：缓存与安全响应头
-
-#### 1) 静态资源长期缓存
-
-对 `/_astro/*` 设置：
-
-- `Cache-Control: public, max-age=31536000, immutable`
-
-含义：静态资源（打包后的 JS/CSS）缓存 1 年，并声明不可变。
-
-#### 2) 全站安全响应头
-
-对所有页面 `/*` 设置：
-
-- `Strict-Transport-Security`：强制 HTTPS（HSTS）
-- `Content-Security-Policy: frame-ancestors 'none'`：禁止被 iframe 嵌入
-- `X-Frame-Options: DENY`：防止点击劫持
-
-:::note
-如果你需要嵌入到某些站点（例如把博客嵌入到其他页面），可能需要调整 `frame-ancestors` / `X-Frame-Options`。
-:::
-
-## 搜索（Pagefind）注意事项
-
-本主题的 `build` 会执行：
-
-1. `astro build`
-2. `pagefind --site ./dist`
-
-因此只要 EdgeOne Pages 使用 `bun run build`，搜索索引就会在部署时自动生成。
-
-:::tip
-如果你发现线上搜索不可用，优先检查：构建命令是否真的执行了 `bun run build`，以及产物目录是否为 `dist`。
-:::
 
 ## 自定义域名
 
@@ -151,37 +57,3 @@ TODO：补充部署进度与成功页面截图
 2. 按照 EdgeOne 控制台提示配置 DNS 解析
 
 TODO：补充 EdgeOne 的域名解析指引（CNAME/A/回源策略等）
-
-## 常见问题
-
-### Q1：构建失败，提示找不到 bun？
-
-- 确认构建环境支持 Bun
-- 确认使用了 `installCommand: bun install`
-
-TODO：如果 EdgeOne 需要显式选择运行时/Node 版本，补充对应设置位置
-
-### Q2：部署成功但样式丢失 / 资源 404？
-
-检查：
-
-1. 输出目录是否是 `dist`
-2. 站点 URL（`astro.config.mjs` 的 `site`）是否配置正确
-3. 是否有错误的 `base` 配置（一般不需要配置 `base`）
-
-### Q3：文章链接不对（缺少域名或斜杠）？
-
-- 确认 `astro.config.mjs` 的 `site` 指向你的线上域名
-- 本主题使用 `trailingSlash: "always"`，请尽量保持链接以 `/` 结尾
-
-### Q4：缓存导致更新不生效？
-
-- `/_astro/*` 的资源是“长期缓存”，但它们通常会带 hash，不会影响更新
-- 如果你改了静态资源但路径没变（不常见），需要手动清理 CDN 缓存
-
-TODO：补充 EdgeOne 清理缓存的操作入口
-
-## 相关资源
-
-- EdgeOne 官方文档：TODO
-- Astro 部署文档（通用）：https://docs.astro.build/en/guides/deploy/
