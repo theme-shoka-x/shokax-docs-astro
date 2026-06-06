@@ -121,13 +121,134 @@ bun run build  # 构建站点 + 生成搜索索引
 
 ---
 
-## 更多功能开发中
+---
 
-ShokaX 主题持续更新中，更多功能特性敬请期待：
+## 🔐 加密文章
 
-- 🌙 深色模式切换（已内置，文档待完善）
-- 💬 评论系统集成（规划中）
-- 📊 文章统计与阅读时间（已内置，文档待完善）
-- 🏷️ 标签云展示（已内置，文档待完善）
+使用 AES-GCM 加密保护敏感文章内容，构建时加密、浏览器端解密。
+
+**核心特性**：
+
+- AES-GCM-256 军事级加密
+- 密码仅在构建时使用，不会发送到服务器
+- 解密在浏览器本地完成
+- 侧边栏目录跟随解密状态自动显示
+
+```md
+---
+title: 私人笔记
+encrypted: true
+password: "my-secret-key"
+---
+```
+
+[查看加密文章文档 →](./encrypted-posts)
+
+---
+
+## 🧩 Tabs 选项卡与 Quiz 测验
+
+除了基础 MDX 组件，ShokaX 还提供了交互式组件来组织内容。
+
+**Tabs 选项卡**：多标签页切换，适合多版本代码对比。
+
+```mdx
+<Tabs defaultValue="npm">
+  <Tab label="npm" value="npm">npm install</Tab>
+  <Tab label="bun" value="bun">bun add</Tab>
+</Tabs>
+```
+
+**Quiz 测验**：支持单选题、多选题、判断题、填空题。
+
+```mdx
+<QuizGroup>
+  <Quiz type="single" question="...">
+    <QuizOptions>
+      <QuizOption correct>A</QuizOption>
+    </QuizOptions>
+  </Quiz>
+</QuizGroup>
+```
+
+[查看 Tabs 与 Quiz 文档 →](./tabs-quiz)
+
+---
+
+## 🌙 暗黑模式
+
+内置完整的暗黑模式支持，CSS 变量驱动，一键切换。
+
+**核心特性**：
+
+- 自动检测系统主题偏好
+- 手动一键切换
+- `localStorage` 持久化偏好
+- View Transition 平滑过渡动画
+- 代码高亮自动适配
+
+[查看暗黑模式文档 →](./dark-mode)
+
+---
+
+## 📊 统计仪表盘
+
+基于 ECharts 的博客数据可视化，访问 `/statistics/` 查看。
+
+**包含图表**：月度发文趋势、分类分布饼图、标签分布饼图。
+
+[查看统计仪表盘文档 →](./statistics)
+
+---
+
+## 🎵 音乐播放器
+
+集成 nyx-player，支持网易云音乐和 QQ 音乐歌单。
+
+```ts
+nyxPlayer: {
+  enable: true,
+  urls: [{ name: "歌单", url: "..." }],
+}
+```
+
+[查看音乐播放器文档 →](./music-player)
+
+---
+
+## 🔢 数学公式
+
+内置 KaTeX 渲染，支持 LaTeX 数学公式。
+
+```md
+行内公式：$E = mc^2$
+
+块级公式：
+$$
+\int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}
+$$
+```
+
+[查看数学公式文档 →](./math)
+
+---
+
+## 💻 代码高亮增强
+
+Shiki 代码高亮 + 6 个 Transformer 增强。
+
+**功能**：彩色括号、差异对比、行高亮/聚焦、错误标注、复制按钮。
+
+```javascript
+function add(a, b) {
+  return a + b;         // [!code --]
+  const result = a + b; // [!code ++]
+  return result;        // [!code ++]
+}
+```
+
+[查看代码高亮文档 →](./code-highlighting)
+
+---
 
 有功能建议？欢迎在 [GitHub Issues](https://github.com/theme-shoka-x/astro-theme-shokax/issues) 提出！

@@ -6,6 +6,9 @@ import starlightSidebarTopics from "starlight-sidebar-topics";
 
 // https://astro.build/config
 export default defineConfig({
+  markdown: {
+    gfm: true,
+  },
   integrations: [
     starlight({
       locales: {
@@ -33,11 +36,11 @@ export default defineConfig({
             items: [
               {
                 label: "入门",
-                autogenerate: { directory: "/start/guides/" },
+                items: [{ autogenerate: { directory: "/start/guides/" } }],
               },
               {
                 label: "部署",
-                autogenerate: { directory: "/start/deploy/" },
+                items: [{ autogenerate: { directory: "/start/deploy/" } }],
               },
             ],
           },
@@ -48,11 +51,11 @@ export default defineConfig({
 						items: [
 							{
 								label: '功能',
-								autogenerate: { directory: '/guides/features/' },
+								items: [{ autogenerate: { directory: '/guides/features/' } }],
 							},
 							{
 								label: '配置',
-								autogenerate: { directory: '/guides/configs/' },
+								items: [{ autogenerate: { directory: '/guides/configs/' } }],
 							}
 						]
 					},
@@ -63,7 +66,7 @@ export default defineConfig({
             items: [
               {
                 label: "Hyacine CLI",
-                autogenerate: { directory: "/hyacine/cli/" },
+                items: [{ autogenerate: { directory: "/hyacine/cli/" } }],
               }
             ]
           }

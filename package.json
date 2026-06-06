@@ -12,15 +12,15 @@
     "format": "bun run oxfmt . "
   },
   "dependencies": {
-    "@astrojs/starlight": "0.38.1",
-    "astro": "6.0.4",
+    "@astrojs/starlight": "0.39.2",
+    "astro": "6.4.4",
     "astro-auto-import": "^0.5.1",
     "sharp": "^0.34.2",
-    "starlight-sidebar-topics": "^0.6.2"
+    "starlight-sidebar-topics": "^0.7.1"
   },
   "devDependencies": {
-    "oxfmt": "^0.33.0",
-    "oxlint": "^1.48.0",
-    "oxlint-tsgolint": "^0.14.0"
+    "oxfmt": "^0.53.0",
+    "oxlint": "^1.68.0",
+    "oxlint-tsgolint": "^0.23.0"
   }
 }
