@@ -1,0 +1,102 @@
+---
+title: 图片缩放
+description: 点击图片全屏预览，支持图片组浏览和键盘导航
+---
+
+ShokaX 内置了图片缩放预览功能。文章中的所有图片都会自动被包裹在 `<image-zoom>` 自定义元素中，点击即可在全屏灯箱中查看高清大图。
+
+## 使用方式
+
+图片缩放功能**自动启用**，无需任何配置。在 Markdown 中正常插入图片即可：
+
+```md
+![风景照片](/images/landscape.jpg)
+```
+
+渲染后的图片会有一个放大镜光标（`zoom-in`），点击后弹出全屏预览。
+
+## 功能特性
+
+### 全屏灯箱
+
+点击图片后，弹出毛玻璃遮罩层，图片居中显示，带有淡入缩放动画：
+
+- 图片最大宽度：92vw，最大高度：86vh
+- 支持暗色半透明背景 + backdrop-filter 模糊
+- 平滑的进出场动画（220ms）
+- 点击遮罩空白区域或按 `Esc` 关闭
+
+### 图片组浏览
+
+如果多张图片被放在同一个 `[data-image-zoom-gallery]` 容器内，会自动识别为**图片组**，支持前后切换浏览：
+
+```mdx
+<div data-image-zoom-gallery>
+  ![图1](/images/01.jpg)
+  ![图2](/images/02.jpg)
+  ![图3](/images/03.jpg)
+</div>
+```
+
+预览时会显示左右箭头按钮，支持：
+- 点击箭头切换上一张/下一张
+- 键盘 `←` / `→` 切换
+- 底部显示图片 alt 文字作为说明
+
+### 键盘操作
+
+| 按键 | 操作 |
+| :--- | :--- |
+| `Esc` | 关闭预览 |
+| `←` | 上一张（图片组） |
+| `→` | 下一张（图片组） |
+| `Enter` / `Space` | 打开预览（焦点在图片上时） |
+
+### 无障碍
+
+- 图片自动添加 `role="button"` 和 `tabindex="0"`
+- 灯箱使用原生 `<dialog>` 元素 + `showModal()`
+- 支持屏幕阅读器
+- 尊重 `prefers-reduced-motion`（关闭动画）
+
+### 滚动锁定
+
+预览打开时自动锁定页面滚动，关闭时恢复，防止背景内容滚动。
+
+## 技术实现
+
+图片缩放通过以下机制实现：
+
+1. **构建时**：`wrapRenderedImages.ts` 将所有 `<img>` 标签包裹为 `<image-zoom><img /></image-zoom>`
+2. **运行时**：`ImageZoom.svelte` 作为 Svelte 5 Custom Element（`<image-zoom>`）注册
+3. **加载策略**：使用 `client:idle` 指令，在浏览器空闲时加载，不影响首屏性能
+
+## 自定义
+
+### 修改动画时长
+
+如需调整动画速度，可覆盖 CSS 变量或直接修改 `ImageZoom.svelte`：
+
+```css
+/* 全局覆盖 */
+image-zoom::part(overlay) {
+  --zoom-duration: 300ms;
+}
+```
+
+### 禁用图片缩放
+
+如需禁用某张图片的缩放功能，可以在 Markdown 渲染后移除 `<image-zoom>` 包裹，或修改 `wrapRenderedImages.ts` 的过滤逻辑。
+
+## 常见问题
+
+### Q: 为什么某些图片不能缩放？
+
+检查以下几点：
+1. 图片是否为外部链接（远程 URL）—— 远程图片同样支持缩放
+2. 图片是否在 `wrapRenderedImages` 的处理范围内
+3. 浏览器是否支持 Web Components 和 `<dialog>` 元素
+
+### Q: 图片组不显示导航箭头？
+
+确保所有图片在同一个 `data-image-zoom-gallery` 容器内，且至少有 2 张图片。

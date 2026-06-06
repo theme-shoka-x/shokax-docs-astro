@@ -29,7 +29,7 @@ export default defineConfig({
 - 首页顶部会展示"Tutorial"和"Frontend"两个分类的卡片
 
 :::tip
-两个字段都是可选的。如果不配置 `home`，会使用默认值：`pageSize: 10`，不显示分类卡片。
+两个字段都是可选的。如果不配置 `home`，会使用默认值：`pageSize: 5`，不显示分类卡片。
 :::
 
 ## 配置文章数量（pageSize）
@@ -38,7 +38,7 @@ export default defineConfig({
 
 ### 默认值
 
-如果不配置，默认每页显示 **10 篇文章**。
+如果不配置，默认每页显示 **5 篇文章**。
 
 ### 自定义数量
 
@@ -157,7 +157,7 @@ export default defineConfig({
 
 | 字段                         | 类型     | 默认值 | 说明                                          |
 | :--------------------------- | :------- | :----- | :-------------------------------------------- |
-| `pageSize`                   | `number` | `10`   | 每页显示的文章数量（不含置顶文章）。          |
+| `pageSize`                   | `number` | `5`    | 每页显示的文章数量（不含置顶文章）。          |
 | `selectedCategories`         | `Array`  | `[]`   | 首页突出显示的分类列表。                      |
 | `selectedCategories[].name`  | `string` | -      | **必填**。分类名称（需与文章中一致）。        |
 | `selectedCategories[].cover` | `string` | -      | **可选**。分类封面图片（public 路径或 URL）。 |

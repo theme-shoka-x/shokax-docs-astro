@@ -1,0 +1,60 @@
+---
+title: hyc draft / unpublish
+description: 取消发布文章，将其设为草稿状态
+---
+
+`hyc unpublish` 将已发布的文章重新设为草稿状态。`hyc draft` 是 `unpublish` 的别名，功能完全相同。
+
+## 用法
+
+```bash
+hyc unpublish <搜索>
+hyc draft <搜索>
+```
+
+## 参数
+
+| 参数 | 说明 |
+| :--- | :--- |
+| `<搜索>` | 文章标识符。支持 ID、标题、slug 或文件路径 |
+
+## 功能说明
+
+执行后，HyC 会：
+
+1. 查询目标文章
+2. 将文章的 `draft` 字段从 frontmatter 中改为 `true`
+3. 同步数据库
+
+效果：文章从首页列表、RSS、搜索索引中移除，不再公开可见，但文章文件仍然保留。
+
+## 示例
+
+```bash
+# 通过标题取消发布
+hyc unpublish "我的私密笔记"
+
+# 通过 slug 取消发布
+hyc draft my-private-post
+
+# 通过 ID 取消发布
+hyc unpublish 42
+```
+
+## 与 publish 的关系
+
+| 命令 | 效果 |
+| :--- | :--- |
+| `hyc publish <搜索>` | 将 `draft` 改为 `false`（公开发布） |
+| `hyc unpublish <搜索>` | 将 `draft` 改为 `true`（设为草稿） |
+| `hyc draft <搜索>` | 同 `unpublish`（别名） |
+
+## 常见问题
+
+### Q: unpublish 会删除文章文件吗？
+
+不会。`unpublish` 只修改 frontmatter 中的 `draft` 字段，文章文件本身不会被删除。
+
+### Q: 已经发布的文章还可以重新编辑吗？
+
+可以。使用 `hyc edit <搜索>` 在编辑器中打开文章进行修改。修改完成后如果需要重新发布，运行 `hyc publish <搜索>`。

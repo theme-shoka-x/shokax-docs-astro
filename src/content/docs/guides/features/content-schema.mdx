@@ -1,0 +1,120 @@
+---
+title: 内容集合 Schema
+description: 文章和瞬间的内容集合字段定义与验证规则
+---
+
+ShokaX 使用 Astro 内容集合（Content Collections）来管理文章和瞬间，通过 [Zod](https://zod.dev) 进行数据校验。
+
+## 文章集合 (`posts`)
+
+文章存放在 `src/posts/` 目录下，支持 `.md` 和 `.mdx` 格式。
+
+### Frontmatter 字段
+
+| 字段 | 类型 | 必填 | 默认值 | 说明 |
+| :--- | :--- | :--- | :--- | :--- |
+| `title` | `string` | ✅ | - | 文章标题 |
+| `date` | `Date` | ✅ | - | 发布日期 |
+| `description` | `string` | ❌ | - | 文章摘要（用于 SEO 和列表展示） |
+| `updated` | `Date` | ❌ | - | 最后更新日期 |
+| `tags` | `string[]` | ❌ | - | 标签列表 |
+| `categories` | `string[]` | ❌ | - | 分类列表（支持文件夹自动分类） |
+| `draft` | `boolean` | ❌ | `false` | 是否为草稿（草稿不显示在列表中） |
+| `cover` | `Image` | ❌ | - | 文章封面图片（本地图片引用） |
+| `sticky` | `boolean` | ❌ | `false` | 是否置顶 |
+| `license` | `LicenseType` | ❌ | 全站默认 | 单篇文章许可协议 |
+| `encrypted` | `boolean` | ❌ | `false` | 是否加密文章 |
+| `password` | `string` | ❌ | - | 加密密码（仅构建时使用，不会输出到前端） |
+
+### LicenseType
+
+```
+"CC-BY-4.0" | "CC-BY-SA-4.0" | "CC-BY-ND-4.0" |
+"CC-BY-NC-4.0" | "CC-BY-NC-SA-4.0" | "CC-BY-NC-ND-4.0" | "NOREPRINT"
+```
+
+### 文件夹自动分类
+
+如果将文章放在以分类命名的文件夹中，ShokaX 会自动应用分类：
+
+```
+src/posts/技术/前端/my-post.md
+```
+
+等价于在 frontmatter 中设置：
+```yaml
+categories: ["技术", "前端"]
+```
+
+:::note
+如果同时使用文件夹分类和 frontmatter 的 `categories` 字段，两者的值会合并。
+:::
+
+### 完整示例
+
+```yaml title="src/posts/my-article.md"
+---
+title: "我的技术文章"
+description: "这是一篇关于前端开发的技术分享"
+date: 2026-06-06
+updated: 2026-06-10
+tags:
+  - Astro
+  - Svelte
+  - UnoCSS
+categories:
+  - 技术
+  - 前端
+draft: false
+sticky: true
+license: CC-BY-NC-SA-4.0
+---
+```
+
+## 瞬间集合 (`moments`)
+
+瞬间存放在 `src/moments/` 目录下，是轻量级的动态/说说内容。
+
+### Frontmatter 字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| :--- | :--- | :--- | :--- |
+| `date` | `Date` | ✅ | 发布日期 |
+| `images` | `(string \| Image)[]` | ❌ | 附加图片，支持本地路径和远程 URL |
+
+### 与文章的区别
+
+| | 文章 (posts) | 瞬间 (moments) |
+| :--- | :--- | :--- |
+| 用途 | 长文写作 | 短动态、状态更新 |
+| 标题 | 必填 | 无 |
+| 分类/标签 | 支持 | 不支持 |
+| 加密 | 支持 | 不支持 |
+| 封面图 | 支持 | 不支持 |
+| RSS | 包含 | 不包含 |
+
+### 示例
+
+```yaml title="src/moments/2026-06-06.md"
+---
+date: 2026-06-06
+images:
+  - "https://example.com/photo.jpg"
+---
+
+今天天气真好 ☀️
+```
+
+## 校验错误排查
+
+如果构建时报 Zod 校验错误，常见原因：
+
+| 错误 | 原因 | 解决 |
+| :--- | :--- | :--- |
+| `Invalid date format` | `date` 字段格式不正确 | 使用 `YYYY-MM-DD` 或 ISO 8601 格式 |
+| `Expected string, received number` | 字段类型不匹配 | 用引号包裹字符串值 |
+| `Invalid enum value` | `license` 值不在支持列表中 | 使用合法的 LicenseType |
+
+## 扩展 Schema
+
+如需自定义字段，编辑 `src/content.config.ts`，在对应集合的 `schema` 中添加新的 Zod 验证规则。

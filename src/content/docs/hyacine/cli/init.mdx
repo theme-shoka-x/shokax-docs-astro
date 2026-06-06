@@ -1,0 +1,89 @@
+---
+title: hyc init
+description: 初始化 Hyacine 项目配置，创建 hyacine.yml 和必要目录
+---
+
+`hyc init` 用于初始化 HyC 项目配置，创建 `hyacine.yml` 配置文件和必要的目录结构。
+
+## 用法
+
+```bash
+hyc init
+```
+
+## 功能说明
+
+执行 `hyc init` 后，HyC 会在当前项目目录中：
+
+1. 创建 `hyacine.yml` — 项目配置文件
+2. 创建内容目录（`contentDir`，如 `src/posts`）
+3. 创建资源目录（`assetsDir`，如 `src/assets`）
+4. 创建数据库目录（`databaseDir`，如 `.hyacine`）
+5. 设置 `themeConfigPath` 等主题配置路径
+
+## 生成的配置文件
+
+默认的 `hyacine.yml` 包含以下配置：
+
+```yaml title="hyacine.yml"
+contentDir: src/posts          # 文章存放目录
+assetsDir: src/assets          # 静态资源目录
+databaseDir: .hyacine          # 数据库文件目录
+defaultCategories: []          # 默认分类
+
+postExtension:                 # 支持的文章格式
+  - .md
+  - .mdx
+
+assetResolution: standard      # 资源路径解析模式
+
+themeConfigPath: src/theme.config.ts           # 主题配置入口
+themeConfigDefPath: src/toolkit/themeConfig.ts # 主题配置类型定义
+themeConfigDefType: ShokaXThemeConfig          # 类型名称
+themeConfigTemplatePath: src/theme.config.template.txt  # 配置模板
+
+fonts:                         # 字体配置
+  - path: src/assets/fonts/LXGWWenKai-Regular.ttf
+    type: standard
+  - path: src/assets/fonts/MapleMono-CN-Regular.ttf
+    type: monospace
+
+images:                        # 内置图片配置
+  - path: src/assets/avatar.avif
+  - path: src/assets/images/cover-1.avif
+  # ... 更多封面图片
+
+# AI 嵌入配置（可选）
+embedding:
+  enabled: false               # 是否启用嵌入向量生成
+  model: ""                    # Hugging Face 模型名
+  maxChunkChars: 512           # 最大分块字符数
+
+# AI 摘要配置（可选）
+summary:
+  enabled: false               # 是否启用 AI 摘要
+  apiBaseUrl: ""               # OpenAI 兼容 API 地址
+  apiKey: ""                   # API 密钥
+  model: ""                    # 模型名
+  maxInputChars: 2000          # 最大输入字符数
+  maxOutputTokens: 256         # 最大输出 token
+  temperature: 0.7             # 生成温度
+```
+
+## 后续步骤
+
+初始化后，你可以：
+
+1. 根据需要修改 `hyacine.yml` 中的配置
+2. 运行 `hyc sync` 同步数据库
+3. 运行 `hyc new "标题"` 创建第一篇文章
+
+## 常见问题
+
+### Q: init 会覆盖已有的 hyacine.yml 吗？
+
+不会。如果 `hyacine.yml` 已经存在，HyC 会跳过文件创建，只检查并创建缺失的目录。
+
+### Q: 如何更改文章目录？
+
+修改 `hyacine.yml` 中的 `contentDir` 字段，然后运行 `hyc sync` 重新同步。

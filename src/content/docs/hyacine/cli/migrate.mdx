@@ -1,0 +1,64 @@
+---
+title: hyc migrate
+description: 迁移文章目录结构，在三种模式间切换
+---
+
+`hyc migrate` 用于批量迁移文章的目录结构。支持三种模式，与 `hyc sort` 使用相同的模式分类。
+
+## 用法
+
+```bash
+hyc migrate <模式> [--asset-mode <资产模式>]
+```
+
+## 模式
+
+| 模式 | 说明 |
+| :--- | :--- |
+| `category` | 按分类层级组织文章目录 |
+| `timeline` | 按年份/月份组织文章目录 |
+| `flat` | 扁平化，所有文章放在同一目录下 |
+
+## 选项
+
+| 选项 | 默认值 | 说明 |
+| :--- | :--- | :--- |
+| `--asset-mode` | `standard` | 资产路径解析模式。可选 `standard` 或 `public-root` |
+
+## 示例
+
+```bash
+# 按分类迁移
+hyc migrate category
+
+# 按时间线迁移
+hyc migrate timeline
+
+# 扁平化 + public-root 资产模式
+hyc migrate flat --asset-mode public-root
+```
+
+## 与 sort 的区别
+
+| | `hyc sort` | `hyc migrate` |
+| :--- | :--- | :--- |
+| 用途 | 组织当前已有文章的目录结构 | 从旧结构迁移到新结构 |
+| 资产处理 | 标准模式 | 支持 `--asset-mode` 指定路径解析方式 |
+| 适用场景 | 日常整理 | 从 Hexo 等旧平台迁移 |
+
+## 迁移前建议
+
+1. 先使用 `hyc backup` 备份当前项目
+2. 确认文章 frontmatter 中的 categories 和 date 字段正确
+3. 迁移后运行 `hyc sync` 更新数据库
+
+## 常见问题
+
+### Q: migrate 会丢失文章吗？
+
+不会。`migrate` 只移动文件位置、更新 frontmatter，文章内容本身不受影响。但建议迁移前执行 `hyc backup` 以防万一。
+
+### Q: asset-mode 选哪个？
+
+- `standard`（默认）：文章相关图片放在文章同目录下
+- `public-root`：图片路径以 `/` 开头，指向 `public/` 目录

@@ -1,0 +1,109 @@
+---
+title: RSS 订阅与 Sitemap
+description: 配置 RSS 订阅源和站点地图，提升 SEO 和读者订阅体验
+---
+
+ShokaX 内置了 RSS 订阅和 Sitemap 站点地图功能，开箱即用，帮助搜索引擎更好地索引你的博客，并为读者提供便捷的订阅方式。
+
+## RSS 订阅
+
+RSS（Really Simple Syndication）是一种标准化的内容订阅格式，读者可以通过 RSS 阅读器订阅你的博客，在新文章发布时自动获取更新。
+
+### 访问 RSS
+
+ShokaX 使用 Astro 内置的 `@astrojs/rss` 生成 RSS 订阅源。构建后，RSS 文件自动生成在：
+
+```
+https://你的域名/rss.xml
+```
+
+:::note
+RSS 文件在**生产构建**（`bun run build`）后生成。开发模式下可能无法访问。
+:::
+
+### RSS 包含的内容
+
+RSS 订阅源会自动包含：
+- 站点标题和描述
+- 所有已发布文章（`draft: false`）的标题、摘要、发布日期和链接
+- 文章正文内容
+
+:::caution
+加密文章（`encrypted: true`）**不会**出现在 RSS 订阅源中，以保护私密内容。
+:::
+
+### 自定义 RSS
+
+如果需要自定义 RSS 的生成逻辑（如修改标题、描述、过滤规则），编辑 Astro 中负责生成 RSS 的路由文件。
+
+## Sitemap
+
+Sitemap（站点地图）是一个 XML 文件，列出了网站上所有重要页面，帮助搜索引擎更有效地抓取你的网站。
+
+### 访问 Sitemap
+
+ShokaX 使用 `@astrojs/sitemap` 自动生成站点地图。构建后，Sitemap 文件在：
+
+```
+https://你的域名/sitemap-index.xml    （站点地图索引）
+https://你的域名/sitemap-0.xml        （实际页面列表）
+```
+
+### Sitemap 包含的内容
+
+Sitemap 会自动包含：
+- 所有静态路由页面（首页、分类页、标签页、归档页等）
+- 所有已发布文章页面
+- 动态内容页面（友链页、统计页、瞬间页等）
+
+### Sitemap 配置
+
+Sitemap 在 `astro.config.mjs` 中配置：
+
+```js title="astro.config.mjs"
+import sitemap from "@astrojs/sitemap";
+
+export default defineConfig({
+  site: "https://你的域名.com",   // ← 必须配置此项
+  integrations: [
+    sitemap(),
+  ],
+});
+```
+
+:::caution[重要]
+确保 `astro.config.mjs` 中的 `site` 字段填写了正确的域名。Sitemap 和 RSS 中的链接都依赖此配置。
+:::
+
+## 配置 `site` 字段
+
+`site` 是 Astro 项目的基础 URL，影响 RSS、Sitemap、规范链接（canonical URL）等 SEO 相关功能。
+
+```js title="astro.config.mjs"
+export default defineConfig({
+  site: "https://myblog.com",    // 替换为你的真实域名
+});
+```
+
+如果你还不知道最终域名，可以先用占位符，但**正式上线前必须修改**。
+
+## 常见问题
+
+### Q: RSS 文件找不到？
+
+1. 确认是否执行了生产构建（`bun run build`）
+2. R开发模式下 RSS 不生成，需要 `bun run build && bun run preview`
+
+### Q: Sitemap 中的链接不对？
+
+检查 `astro.config.mjs` 中的 `site` 字段是否填写了正确的域名。
+
+### Q: 如何提交 Sitemap 给搜索引擎？
+
+1. **Google**：通过 [Google Search Console](https://search.google.com/search-console) 提交
+2. **Bing**：通过 [Bing Webmaster Tools](https://www.bing.com/webmasters) 提交
+3. **其他**：在网站的 `robots.txt` 中添加 `Sitemap: https://你的域名/sitemap-index.xml`
+
+### Q: 可以排除某些页面不加入 Sitemap 吗？
+
+可以在 `astro.config.mjs` 中对 sitemap 集成配置 `filter` 选项，例如排除草稿或特定页面。

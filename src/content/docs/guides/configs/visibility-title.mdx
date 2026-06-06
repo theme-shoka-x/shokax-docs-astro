@@ -1,0 +1,73 @@
+---
+title: 页面标题切换
+description: 配置用户切换标签页时动态变化的浏览器标题
+---
+
+ShokaX 支持在用户切换浏览器标签页时动态更改页面标题，让博客更有个性和互动感。所有配置都在 `src/theme.config.ts` 的 `visibilityTitle` 字段中。
+
+## 快速开始
+
+在 `src/theme.config.ts` 中配置：
+
+```ts title="src/theme.config.ts"
+export default defineConfig({
+  visibilityTitle: {
+    enable: true,
+    leaveTitle: "👀 你先忙，我等你回来~",
+    returnTitle: "🎉 欢迎回来！",
+    restoreDelay: 3000,
+  },
+});
+```
+
+## 效果说明
+
+当你配置了标题切换后：
+
+1. **切换离开**（切换到其他标签页或应用）：浏览器标签页标题变为 `leaveTitle`
+2. **切换回来**（回到当前标签页）：标签页标题变为 `returnTitle`
+3. **恢复原标题**：延迟 `restoreDelay` 毫秒后，自动恢复为原始页面标题
+
+## 配置选项
+
+| 字段 | 类型 | 默认值 | 说明 |
+| :--- | :--- | :--- | :--- |
+| `visibilityTitle.enable` | `boolean` | `true` | 是否启用标签页标题切换。设为 `false` 可关闭此功能。 |
+| `visibilityTitle.leaveTitle` | `string` | `"👀 你先忙，我等你回来~"` | 用户离开当前标签页时显示的标题。 |
+| `visibilityTitle.returnTitle` | `string` | `"🎉 欢迎回来！"` | 用户回到当前标签页时显示的标题。 |
+| `visibilityTitle.restoreDelay` | `number` | `3000` | 返回后恢复原始标题的延迟时间（毫秒）。 |
+
+## 使用示例
+
+### 英文网站
+
+```ts title="src/theme.config.ts"
+export default defineConfig({
+  visibilityTitle: {
+    enable: true,
+    leaveTitle: "😢 Don't leave me...",
+    returnTitle: "😍 Welcome back!",
+    restoreDelay: 2000,         // 2 秒后恢复
+  },
+});
+```
+
+### 关闭标题切换
+
+如果你不需要这个功能：
+
+```ts title="src/theme.config.ts"
+export default defineConfig({
+  visibilityTitle: {
+    enable: false,
+  },
+});
+```
+
+## 技术原理
+
+标题切换通过监听浏览器的 [`visibilitychange`](https://developer.mozilla.org/zh-CN/docs/Web/API/Document/visibilitychange_event) 事件实现。当 `document.hidden` 变为 `true` 时切换到离开标题，变为 `false` 时切换到返回标题，然后使用 `setTimeout` 在延迟后恢复原始标题。
+
+:::note
+标题切换仅在用户实际切换标签页/窗口时触发，不会影响屏幕阅读器等辅助工具。
+:::

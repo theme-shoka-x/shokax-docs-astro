@@ -1,0 +1,113 @@
+---
+title: 国际化（i18n）
+description: 配置多语言界面，适配简体中文、繁体中文、日语和英语
+---
+
+ShokaX 内置了完整的国际化（i18n）支持，基于 `i18next` 实现。你可以在 `src/theme.config.ts` 中轻松切换网站界面语言。
+
+## 支持的语言
+
+ShokaX 目前支持 4 种语言，覆盖了 **244 个翻译条目**：
+
+| 语言代码 | 语言名称 | 翻译文件 |
+| :--- | :--- | :--- |
+| `zh-CN` | 简体中文 | `src/i18n/locales/zh-CN.json` （默认） |
+| `zh-TW` | 繁体中文 | `src/i18n/locales/zh-TW.json` |
+| `ja` | 日语 | `src/i18n/locales/ja.json` |
+| `en` | 英语 | `src/i18n/locales/en.json` |
+
+## 切换语言
+
+在 `src/theme.config.ts` 中设置 `locale` 字段：
+
+```ts title="src/theme.config.ts"
+export default defineConfig({
+  siteName: "My Blog",
+  locale: "en",           // 切换为英语
+});
+```
+
+```ts title="src/theme.config.ts"
+export default defineConfig({
+  siteName: "私のブログ",
+  locale: "ja",           // 切换为日语
+});
+```
+
+如果不配置 `locale`，默认使用简体中文（`zh-CN`）。
+
+## 翻译覆盖范围
+
+i18n 系统覆盖了网站界面的所有文字，包括：
+
+| 区域 | 翻译内容 |
+| :--- | :--- |
+| **导航栏** | 菜单项文字 |
+| **文章相关** | 字数统计、阅读时间、作者、链接、版权声明、置顶标识、加密提示 |
+| **分类/标签/归档** | 页面标题、标签云说明 |
+| **统计** | KPI 标签、图表标题、月度汇总 |
+| **侧边栏** | 目录、概览、作者信息、搜索、动态、随机文章、标签云、公告 |
+| **页脚** | 版权信息、驱动声明、评论提示 |
+| **搜索** | 搜索提示、开发模式提示 |
+| **评论** | Waline 未配置提示、匿名用户 |
+| **瞬间** | 分页、图片标题 |
+| **加密文章** | 密码输入提示 |
+| **图片缩放** | 操作提示 |
+| **关于弹窗** | 对话提示 |
+
+## 自定义翻译
+
+如果你需要修改某个翻译文本或添加新的语言，可以直接编辑 `src/i18n/locales/` 目录下的 JSON 文件。
+
+### 修改现有翻译
+
+以修改英文版的"阅读时间"为例，编辑 `src/i18n/locales/en.json`：
+
+```json title="src/i18n/locales/en.json"
+{
+  "post": {
+    "readingTime": "Estimated reading time",
+    "minutes": "minutes",
+    "words": "words"
+  }
+}
+```
+
+### 添加新语言
+
+1. 复制 `src/i18n/locales/en.json` 并重命名（如 `fr.json`）
+2. 翻译所有文本
+3. 在 `src/toolkit/themeConfig.ts` 的 `Locale` 类型和 `src/i18n/index.ts` 中添加新语言的支持
+
+:::caution
+添加新语言需要在代码层面修改类型定义。如果你不熟悉 TypeScript，建议在 [GitHub Issues](https://github.com/theme-shoka-x/astro-blog-shokax/issues) 中提交需求。
+:::
+
+## 语言解析逻辑
+
+ShokaX 的语言解析在 `src/toolkit/i18n/resolveLocale.ts` 中实现：
+
+1. 优先使用 `theme.config.ts` 中配置的 `locale`
+2. 如果配置无效或缺失，回退到默认值 `zh-CN`
+3. 有效语言列表：`zh-CN`, `zh-TW`, `ja`, `en`
+
+## 常见问题
+
+### Q: 切换语言后，文章内容会翻译吗？
+
+**不会**。i18n 只控制**网站界面元素**（导航栏、侧边栏、页脚、提示文字等），不翻译文章正文内容。
+
+### Q: 可以同时支持多语言内容（如中英文文章）吗？
+
+ShokaX 当前版本不内置多语言内容管理。如果你需要发布多语言文章，可以使用以下方式：
+- 在 `src/posts/` 下创建 `zh/` 和 `en/` 子目录
+- 在文章 frontmatter 中添加 `lang` 字段标记
+- 自行处理多语言路由和内容展示
+
+### Q: 为什么有些文字没有被翻译？
+
+可能的原因：
+1. 翻译文件中缺少对应的条目（可以自行添加）
+2. 某些硬编码的文字可能没有通过 i18n 系统
+
+如果你遇到翻译遗漏，可以通过 [GitHub](https://github.com/theme-shoka-x/astro-blog-shokax/issues) 反馈或提 PR 补充。

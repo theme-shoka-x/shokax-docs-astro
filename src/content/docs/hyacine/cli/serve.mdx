@@ -1,0 +1,145 @@
+---
+title: hyc serve
+description: 启动 HyC 本地 API 服务，供前端控制台调用
+---
+
+`hyc serve` 启动一个本地 REST API 服务器，供 [HyC 官方控制台](https://hyc.kaitaku.xyz/) 或自定义前端调用。服务器提供文章管理、主题配置、AI 功能等完整的 REST API。
+
+## 用法
+
+```bash
+hyc serve [选项]
+```
+
+## 选项
+
+| 选项 | 默认值 | 说明 |
+| :--- | :--- | :--- |
+| `-p, --port <端口>` | `3789` | API 服务端口号 |
+| `--setup` | `false` | 启用项目初始化模式（用于交互式安装向导） |
+| `--unsafe` | `false` | 启用不安全 API（调试用） |
+| `--bypass-origin-check` | `false` | 跳过 Origin 白名单检查 |
+| `--bypass-host-check` | `false` | 跳过 Host 白名单检查 |
+
+## 三种运行模式
+
+| 模式 | 标志 | 说明 |
+| :--- | :--- | :--- |
+| **normal** | （默认） | 标准模式，需要已初始化的项目 |
+| **setup** | `--setup` | 初始化模式，用于交互式安装向导，要求工作目录中没有 `package.json` |
+| **unsafe** | `--unsafe` | 调试模式，启用所有 API 端点 |
+
+:::caution
+`--setup` 和 `--unsafe` 不能同时使用。
+:::
+
+## 安全机制
+
+`hyc serve` 默认启用了多层安全保护：
+
+1. **认证码**：每次启动生成 16 位随机认证码，所有 API 请求需携带 `Authorization` 头
+2. **Origin 检查**：仅允许 HyC 官方控制台的白名单域名访问
+3. **Host 检查**：仅接受本地主机请求
+4. **速率限制**：每 IP 每分钟最多 120 次请求
+5. **CORS**：跨域请求受控
+
+## 启动后的输出
+
+```bash
+$ hyc serve
+✅ 服务已在 3789 端口开放
+🔐 认证码（高敏感，请勿泄露）: a1b2c3d4e5f6g7h8
+🌐 请前往官方控制台进行操作：https://hyc.kaitaku.xyz/
+```
+
+## API 端点概览
+
+所有 API 端点都在 `/api/v1` 路径下，需要认证。
+
+### 系统端点
+
+| 方法 | 路径 | 说明 |
+| :--- | :--- | :--- |
+| `GET` | `/health` | 健康检查 |
+| `GET` | `/handshake` | 握手（返回版本、模式、时间） |
+| `GET` | `/system/dependencies` | 系统依赖检测 |
+| `GET` | `/system/github-access` | GitHub 连通性检测 |
+
+### 项目管理
+
+| 方法 | 路径 | 说明 |
+| :--- | :--- | :--- |
+| `POST` | `/project/init` | 初始化项目（仅 setup 模式） |
+| `POST` | `/project/install` | 安装依赖（仅 setup 模式） |
+| `POST` | `/project/sync` | 同步数据库 |
+| `POST` | `/project/backup` | 备份项目 |
+
+### 文章管理
+
+| 方法 | 路径 | 说明 |
+| :--- | :--- | :--- |
+| `POST` | `/posts` | 创建文章 |
+| `GET` | `/posts/query?search=` | 查询文章 |
+| `GET` | `/posts/summary?query=` | 获取 AI 摘要 |
+| `POST` | `/posts/similar` | 查找相似文章 |
+| `GET` | `/posts/edit/-target?search=` | 获取编辑目标 |
+| `GET` | `/posts/edit/read?search=&view=` | 读取文章内容 |
+| `POST` | `/posts/edit/write` | 写入文章内容 |
+| `POST` | `/posts/edit/write-frontmatter` | 写入 frontmatter |
+| `POST` | `/posts/publish` | 发布文章 |
+| `POST` | `/posts/unpublish` | 取消发布 |
+| `POST` | `/posts/sort` | 整理文章 |
+| `POST` | `/posts/move` | 移动文章 |
+| `POST` | `/posts/rename` | 重命名文章 |
+| `GET` | `/posts/stats` | 文章统计 |
+| `POST` | `/posts/categories/set` | 设置分类 |
+| `POST` | `/posts/categories/add` | 添加分类 |
+
+### 内容和资产
+
+| 方法 | 路径 | 说明 |
+| :--- | :--- | :--- |
+| `GET` | `/content?type=` | 列出内容 |
+| `POST` | `/assets/optimize` | 优化资产（扫描 + 清理） |
+
+### 主题配置
+
+| 方法 | 路径 | 说明 |
+| :--- | :--- | :--- |
+| `GET` | `/theme/config/schema` | 获取配置 JSON Schema |
+| `GET` | `/theme/config` | 读取主题配置 |
+| `POST` | `/theme/config` | 写入主题配置 |
+| `GET` | `/theme/fonts` | 列出字体配置 |
+| `POST` | `/theme/fonts/replace` | 替换字体（本地文件） |
+| `POST` | `/theme/fonts/replace/upload` | 替换字体（Base64 上传） |
+| `GET` | `/theme/images` | 列出图片配置 |
+| `POST` | `/theme/images/replace/upload` | 替换图片（Base64 上传） |
+
+## 与 HyC 控制台配合使用
+
+1. 在项目目录运行 `hyc serve`
+2. 记录输出的 16 位认证码
+3. 打开浏览器访问 [https://hyc.kaitaku.xyz/](https://hyc.kaitaku.xyz/)
+4. 在控制台输入认证码
+5. 开始使用可视化的文章管理、主题配置等功能
+
+## 常见问题
+
+### Q: 为什么需要认证码？
+
+认证码确保只有你本人（知道认证码的人）可以操作你的项目。认证码在每次 `hyc serve` 启动时随机生成，不会存储在文件中。
+
+### Q: 可以在远程服务器上运行 serve 吗？
+
+理论上可以，但需要注意：
+- 默认 Host 检查只允许 `127.0.0.1` 和 `localhost`
+- 需要 `--bypass-host-check` 和 `--bypass-origin-check` 选项
+- 认证码通过明文传输，建议使用 SSH 隧道或 VPN 保护安全
+
+### Q: serve 启动失败，端口被占用？
+
+使用 `-p` 选项指定其他端口：
+
+```bash
+hyc serve -p 3790
+```

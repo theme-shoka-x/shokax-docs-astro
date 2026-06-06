@@ -1,0 +1,198 @@
+---
+title: hyacine.yml 配置参考
+description: HyC 项目配置文件 hyacine.yml 的完整字段参考
+---
+
+`hyacine.yml` 是 HyC 的项目配置文件，定义了文章目录、资源路径、AI 功能参数和主题配置路径。
+
+## 完整配置示例
+
+```yaml title="hyacine.yml"
+# 文章存放目录
+contentDir: src/content/posts
+
+# 静态资源目录
+assetsDir: src/assets
+
+# 数据库文件目录
+databaseDir: .hyacine
+
+# 默认分类（创建文章时自动应用）
+defaultCategories: []
+
+# 支持的文章文件扩展名
+postExtension:
+  - .md
+
+# 资源路径解析模式
+assetResolution: standard
+
+# 主题配置入口文件路径
+themeConfigPath: src/theme.config.ts
+
+# 主题配置类型定义文件路径
+themeConfigDefPath: src/toolkit/themeConfig.ts
+
+# 主题配置类型名称
+themeConfigDefType: ShokaXThemeConfig
+
+# 主题配置模板文件路径
+themeConfigTemplatePath: src/theme.config.template.txt
+
+# 字体配置
+fonts:
+  - path: src/assets/fonts/LXGWWenKai-Regular.ttf
+    type: standard           # standard, monospace, serif, sans-serif, display
+  - path: src/assets/fonts/MapleMono-CN-Regular.ttf
+    type: monospace
+
+# 内置图片配置
+images:
+  - path: src/assets/avatar.avif
+  - path: src/assets/images/cover-1.avif
+  - path: src/assets/images/cover-2.avif
+
+# AI 嵌入向量配置
+embedding:
+  enabled: false              # 是否启用
+  model: onnx-community/Qwen3-Embedding-0.6B-ONNX  # Hugging Face 模型 ID
+  maxChunkChars: 512          # 分块最大字符数
+
+# AI 摘要配置
+summary:
+  enabled: false              # 是否启用
+  apiBaseUrl: https://openrouter.ai/api/v1  # OpenAI 兼容 API 地址
+  apiKey: ""                  # API 密钥
+  model: openai/gpt-4o-mini   # 模型名称
+  maxInputChars: 8000         # 最大输入字符数
+  maxOutputTokens: 256        # 最大输出 token 数
+  temperature: 0.2            # 生成温度
+```
+
+## 字段说明
+
+### 基础配置
+
+| 字段 | 类型 | 默认值 | 说明 |
+| :--- | :--- | :--- | :--- |
+| `contentDir` | `string` | `src/content/posts` | 文章 Markdown 文件存放目录 |
+| `assetsDir` | `string` | `src/assets` | 静态资源（图片、字体）目录 |
+| `databaseDir` | `string` | `.hyacine` | 数据库文件目录（建议加入 .gitignore） |
+| `defaultCategories` | `string[]` | `[]` | 新文章默认分类 |
+| `postExtension` | `string[]` | `[".md"]` | 支持的文章扩展名 |
+| `assetResolution` | `string` | `standard` | 资产路径解析模式 |
+
+### 资产路径解析模式
+
+| 值 | 说明 |
+| :--- | :--- |
+| `standard` | 相对路径，图片位于文章同目录或子目录 |
+| `hexo-assetdir` | Hexo 风格，图片位于文章同名的资源目录 |
+| `public-root` | 绝对路径，图片位于 `public/` 目录下 |
+
+### 主题配置路径
+
+| 字段 | 说明 |
+| :--- | :--- |
+| `themeConfigPath` | 用户主题配置文件入口（通常为 `src/theme.config.ts`） |
+| `themeConfigDefPath` | 主题配置 TypeScript 类型定义文件 |
+| `themeConfigDefType` | 导出的配置类型名称 |
+| `themeConfigTemplatePath` | 交互式配置模板文件 |
+
+### 字体配置
+
+| 字段 | 类型 | 说明 |
+| :--- | :--- | :--- |
+| `fonts[].path` | `string` | 字体文件路径 |
+| `fonts[].type` | `"standard"` \| `"monospace"` \| `"serif"` \| `"sans-serif"` \| `"display"` | 字体类型 |
+
+### 图片配置
+
+| 字段 | 类型 | 说明 |
+| :--- | :--- | :--- |
+| `images[].path` | `string` | 图片文件路径 |
+| `images[].recommendedWidth` | `number` | 推荐宽度（用于 HyC 控制台替换时的裁剪建议） |
+| `images[].recommendedHeight` | `number` | 推荐高度（用于 HyC 控制台替换时的裁剪建议） |
+
+### 嵌入向量配置
+
+| 字段 | 类型 | 默认值 | 说明 |
+| :--- | :--- | :--- | :--- |
+| `embedding.enabled` | `boolean` | `false` | 是否在 `hyc sync` 时生成文章嵌入向量 |
+| `embedding.model` | `string` | `onnx-community/Qwen3-Embedding-0.6B-ONNX` | Hugging Face 模型 ID |
+| `embedding.maxChunkChars` | `number` | `512` | 文本分块的最大字符数 |
+
+### AI 摘要配置
+
+| 字段 | 类型 | 默认值 | 说明 |
+| :--- | :--- | :--- | :--- |
+| `summary.enabled` | `boolean` | `false` | 是否在 `hyc sync` 时生成 AI 摘要 |
+| `summary.apiBaseUrl` | `string` | `https://openrouter.ai/api/v1` | OpenAI 兼容 API 端点地址 |
+| `summary.apiKey` | `string` | `""` | API 密钥 |
+| `summary.model` | `string` | `openai/gpt-4o-mini` | 模型名称 |
+| `summary.maxInputChars` | `number` | `8000` | 发送给 API 的最大字符数 |
+| `summary.maxOutputTokens` | `number` | `256` | API 返回的最大 token 数 |
+| `summary.temperature` | `number` | `0.2` | 生成温度（0-2） |
+
+## 配置嵌入模型
+
+推荐的轻量嵌入模型：
+
+| 模型 ID | 维度 | 大小 | 说明 |
+| :--- | :--- | :--- | :--- |
+| `onnx-community/Qwen3-Embedding-0.6B-ONNX` | 1024 | ~1.2GB | 多语言，中文推荐 ⭐默认 |
+| `Xenova/paraphrase-multilingual-MiniLM-L12-v2` | 384 | ~470MB | 多语言，轻量替代 |
+| `Xenova/all-MiniLM-L6-v2` | 384 | ~80MB | 英文模型，轻量快速 |
+
+```yaml
+embedding:
+  enabled: true
+  model: onnx-community/Qwen3-Embedding-0.6B-ONNX
+  maxChunkChars: 512
+```
+
+## 配置 AI 摘要
+
+使用 OpenAI 兼容 API：
+
+```yaml
+summary:
+  enabled: true
+  apiBaseUrl: https://openrouter.ai/api/v1
+  apiKey: sk-your-api-key-here
+  model: openai/gpt-4o-mini
+  maxInputChars: 8000
+  maxOutputTokens: 256
+  temperature: 0.2
+```
+
+或使用其他兼容服务（如 DeepSeek、通义千问等）：
+
+```yaml
+summary:
+  enabled: true
+  apiBaseUrl: https://api.deepseek.com/v1
+  apiKey: sk-your-deepseek-key
+  model: deepseek-chat
+  maxInputChars: 8000
+  maxOutputTokens: 512
+  temperature: 0.3
+```
+
+## 常见问题
+
+### Q: 数据库文件需要提交到 Git 吗？
+
+建议将 `.hyacine` 目录加入 `.gitignore`。数据库文件可以通过 `hyc sync` 重新生成。
+
+### Q: 如何更换嵌入模型？
+
+1. 修改 `hyacine.yml` 中的 `embedding.model`
+2. 删除 `.hyacine` 目录中的嵌入数据（或运行 `hyc optimize`）
+3. 运行 `hyc sync` 重新生成
+
+### Q: API 密钥安全吗？
+
+`hyacine.yml` 中的 `apiKey` 以明文存储。建议：
+- 将 `hyacine.yml` 加入 `.gitignore`（如果包含密钥）
+- 使用环境变量注入密钥（未来版本计划支持）

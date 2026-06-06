@@ -1,0 +1,174 @@
+---
+title: 常见问题
+description: ShokaX 使用中的常见问题和解决方案
+---
+
+## 安装与配置
+
+### Q: 必须使用 Bun 吗？可以用 Node.js 吗？
+
+推荐使用 Bun。ShokaX 针对 Bun 运行时优化，Node.js 兼容性不保证。部分功能（如 `vite-plugin-font` 字体子集化）依赖 Bun 特性。
+
+### Q: 如何切换网站语言？
+
+在 `src/theme.config.ts` 中设置 `locale` 字段：
+
+```ts
+export default defineConfig({
+  siteName: "My Blog",
+  locale: "en",   // zh-CN | zh-TW | ja | en
+});
+```
+
+详见 [国际化文档](/guides/features/i18n/)。
+
+### Q: 如何更换头像？
+
+替换 `src/assets/avatar.avif` 文件（保持文件名不变），或通过 HyC 控制台上传。
+
+### Q: 为什么首页不显示分类卡片？
+
+1. `home.selectedCategories` 中的分类名必须与文章中的完全一致
+2. 该分类下必须有已发布的文章
+
+---
+
+## 构建与部署
+
+### Q: 构建失败，提示内存不足？
+
+尝试增加 Node.js 内存限制，或在 CI 中使用更大内存的机器。字体子集化处理大字符集时可能消耗较多内存。
+
+### Q: 部署后样式丢失？
+
+1. 确认 `astro.config.mjs` 中的 `site` 字段填写了正确的域名
+2. 检查 `base` 路径配置（如果部署在子目录）
+3. 清除浏览器缓存
+
+### Q: 开发模式下搜索不可用？
+
+`bun run dev` 不会生成 Pagefind 索引。使用 `bun run build && bun run preview` 测试搜索功能。
+
+---
+
+## 文章与内容
+
+### Q: 如何创建加密文章？
+
+在 frontmatter 中设置：
+
+```yaml
+---
+encrypted: true
+password: "my-password"
+---
+```
+
+详见 [加密文章文档](/guides/features/encrypted-posts/)。
+
+### Q: 草稿文章如何隐藏？
+
+在 frontmatter 中设置 `draft: true`，或使用 `hyc unpublish <搜索>` 命令。
+
+### Q: 文章字数统计不准确？
+
+统计包含所有已发布文章的正文内容。如果感觉不准，检查是否有未标记的草稿文章被计入。
+
+### Q: 如何让文章置顶？
+
+在 frontmatter 中设置 `sticky: true`。置顶文章始终显示在首页顶部，不占用分页配额。
+
+---
+
+## 评论系统
+
+### Q: 如何添加评论功能？
+
+1. 部署 Waline 服务端（参考 [Waline 文档](https://waline.js.org/)）
+2. 在 `theme.config.ts` 中配置：
+
+```ts
+comments: {
+  enable: true,
+  waline: { serverURL: "https://your-waline.vercel.app" },
+}
+```
+
+详见 [评论系统文档](/guides/configs/comments/)。
+
+### Q: 可以使用其他评论系统吗？
+
+ShokaX 目前仅内置 Waline 支持。如需其他评论系统，需自行修改 `WalineComments.svelte`。
+
+---
+
+## AI 功能
+
+### Q: AI 摘要不显示？
+
+1. 确认已运行 `hyc sync` 并看到摘要生成成功
+2. 检查 `hyacine.yml` 中 `summary.enabled` 和 API 配置
+3. 检查 `theme.config.ts` 中 `hyc.enable` 和 `hyc.aiSummary.enable`
+
+### Q: AI 推荐文章不准确？
+
+- 尝试更换嵌入模型（更高维度）
+- 降低 `minSimilarity` 阈值
+- 确保文章内容足够丰富
+
+详见 [AI 功能文档](/guides/configs/ai-features/)。
+
+---
+
+## 主题定制
+
+### Q: 如何修改主题色？
+
+编辑 `src/styles/palette.css` 中的 CSS 变量：
+
+```css
+:root {
+  --primary-color: #4a90d9;
+  --text-color: #333;
+}
+```
+
+### Q: 如何添加自定义 CSS？
+
+在 `src/styles/` 目录下创建新的 CSS 文件，并在 `Layout.astro` 中引入。
+
+### Q: 如何修改页面布局？
+
+在 `theme.config.ts` 中切换双栏/三栏布局：
+
+```ts
+layout: {
+  mode: "two-column",   // 或 "three-column"
+}
+```
+
+详见 [布局配置文档](/guides/configs/layout/)。
+
+---
+
+## 更新与维护
+
+### Q: 如何更新 ShokaX？
+
+```bash
+git pull
+bun install
+```
+
+如果修改过源代码，建议先 `git stash` 暂存修改，更新后再 `git stash pop`。
+
+### Q: 数据库文件需要备份吗？
+
+`.hyacine` 目录中的数据库文件可以通过 `hyc sync` 重新生成。建议加入 `.gitignore`。
+
+### Q: 如何备份整个项目？
+
+```bash
+hyc backup           # 备份文章和资产到 tar.gz
+git push             # 提交代码到远程仓库
+```

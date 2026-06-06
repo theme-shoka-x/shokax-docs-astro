@@ -1,0 +1,134 @@
+---
+title: 部署配置参考
+description: Vercel、Netlify、EdgeOne Pages 的部署配置文件说明和安全头配置
+---
+
+ShokaX 项目根目录下包含三个部署平台的配置文件，均已预配置好构建命令和安全头。
+
+## 通用配置
+
+所有平台的共同配置：
+
+| 配置项 | 值 | 说明 |
+| :--- | :--- | :--- |
+| 构建命令 | `bun run build` | 两步构建：Astro 构建 + Pagefind 索引 |
+| 输出目录 | `dist` | Astro 静态站点输出目录 |
+| 框架类型 | `astro` | 平台自动识别 |
+
+## Vercel
+
+配置文件：`vercel.json`
+
+```json
+{
+  "framework": "astro",
+  "installCommand": "bun install",
+  "buildCommand": "bun run build",
+  "outputDirectory": "dist",
+  "headers": [
+    {
+      "source": "/_astro/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Content-Security-Policy", "value": "frame-ancestors 'none';" },
+        { "key": "X-Frame-Options", "value": "DENY" }
+      ]
+    }
+  ]
+}
+```
+
+### 安全头
+
+| 路径 | 头 | 值 |
+| :--- | :--- | :--- |
+| `/_astro/*` | `Cache-Control` | `public, max-age=31536000, immutable` |
+| `/*` | `Content-Security-Policy` | `frame-ancestors 'none'` |
+| `/*` | `X-Frame-Options` | `DENY` |
+
+> `/_astro/*` 是 Astro 的静态资源路径，设置 1 年不可变缓存。
+
+## Netlify
+
+配置文件：`netlify.toml`
+
+```toml
+[build]
+framework = "astro"
+command = "bun install && bun run build"
+publish = "dist"
+
+[[headers]]
+for = "/_astro/*"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+for = "/*"
+[headers.values]
+Content-Security-Policy = "frame-ancestors 'none';"
+X-Frame-Options = "DENY"
+```
+
+## EdgeOne Pages
+
+配置文件：`edgeone.json`
+
+```json
+{
+  "installCommand": "bun install",
+  "buildCommand": "bun run build",
+  "outputDirectory": "dist"
+}
+```
+
+### 安全头
+
+| 路径 | 头 | 值 |
+| :--- | :--- | :--- |
+| `/_astro/*` | `Cache-Control` | `public, max-age=31536000, immutable` |
+| `/*` | `Strict-Transport-Security` | `max-age=63072000; includeSubDomains; preload` |
+| `/*` | `Content-Security-Policy` | `frame-ancestors 'none'` |
+| `/*` | `X-Frame-Options` | `DENY` |
+
+> EdgeOne Pages 额外配置了 HSTS（HTTP Strict Transport Security），强制 HTTPS 访问。
+
+## 安全头说明
+
+| 头 | 作用 |
+| :--- | :--- |
+| `Cache-Control: immutable` | 静态资源永不变化，浏览器无需重新验证 |
+| `Content-Security-Policy: frame-ancestors 'none'` | 禁止页面被嵌入 iframe，防止点击劫持 |
+| `X-Frame-Options: DENY` | 同上，兼容旧浏览器 |
+| `Strict-Transport-Security` | 强制 HTTPS，防止中间人攻击 |
+
+## 一键部署
+
+| 平台 | 部署按钮 |
+| :--- | :--- |
+| Vercel | [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/theme-shoka-x/astro-blog-shokax) |
+| Netlify | [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/theme-shoka-x/astro-blog-shokax) |
+| EdgeOne Pages | [![Deploy with EdgeOne Pages](https://cdnstatic.tencentcs.com/edgeone/pages/deploy.svg)](https://edgeone.ai/pages/new?repository-url=https://github.com/theme-shoka-x/astro-blog-shokax) |
+
+## 自定义域名
+
+部署后，在各平台的控制台中绑定自定义域名：
+
+1. **Vercel**：Settings → Domains
+2. **Netlify**：Domain settings → Custom domain
+3. **EdgeOne Pages**：域名管理 → 绑定域名
+
+绑定后，记得修改 `astro.config.mjs` 中的 `site` 字段为你的自定义域名。
+
+## Cloudflare Pages
+
+Cloudflare Pages 的详细部署指南请参见 [Cloudflare 部署文档](/start/deploy/cloudflare/)。
+
+## 自托管
+
+如需部署到自有服务器，请参见 [自托管部署文档](/start/deploy/self-host/)。

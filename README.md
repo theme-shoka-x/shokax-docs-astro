@@ -1,49 +1,30 @@
-# Starlight Starter Kit: Basics
+# ShokaX Astro 文档
 
-[![Built with Starlight](https://astro.badg.es/v2/built-with-starlight/tiny.svg)](https://starlight.astro.build)
+基于 [Starlight](https://starlight.astro.build) 构建的 [ShokaX Astro Blog Theme](https://github.com/theme-shoka-x/astro-blog-shokax) 官方文档站点。
 
-```
-bun create astro@latest -- --template starlight
-```
+## 文档内容
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+- **入门指南**：快速上手、Hexo 迁移、Markdown 写作
+- **部署指南**：Vercel、Netlify、Cloudflare Pages、EdgeOne Pages、自托管
+- **配置参考**：主题配置（导航栏、侧边栏、封面、页脚、评论等）
+- **功能介绍**：MDX 组件、加密文章、搜索、国际化、AI 功能等
+- **生态系统**：Hyacine CLI 工具和插件系统
 
-## 🚀 Project Structure
+## 本地开发
 
-Inside of your Astro + Starlight project, you'll see the following folders and files:
-
-```
-.
-├── public/
-├── src/
-│   ├── assets/
-│   ├── content/
-│   │   └── docs/
-│   └── content.config.ts
-├── astro.config.mjs
-├── package.json
-└── tsconfig.json
+```bash
+bun install
+bun dev
 ```
 
-Starlight looks for `.md` or `.mdx` files in the `src/content/docs/` directory. Each file is exposed as a route based on its file name.
+## 构建
 
-Images can be added to `src/assets/` and embedded in Markdown with a relative link.
+```bash
+bun run build
+```
 
-Static assets, like favicons, can be placed in the `public/` directory.
+## 许可证
 
-## 🧞 Commands
+文档内容采用 [CC-BY-NC-SA-4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) 许可。
 
-All commands are run from the root of the project, from a terminal:
-
-| Command               | Action                                           |
-| :-------------------- | :----------------------------------------------- |
-| `bun install`         | Installs dependencies                            |
-| `bun dev`             | Starts local dev server at `localhost:4321`      |
-| `bun build`           | Build your production site to `./dist/`          |
-| `bun preview`         | Preview your build locally, before deploying     |
-| `bun astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `bun astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Check out [Starlight’s docs](https://starlight.astro.build/), read [the Astro documentation](https://docs.astro.build), or jump into the [Astro Discord server](https://astro.build/chat).
+主题源码请参见 [astro-blog-shokax](https://github.com/theme-shoka-x/astro-blog-shokax)。

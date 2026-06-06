@@ -67,7 +67,7 @@ export default defineConfig({
   footer: {
     icon: {
       name: "sakura rotate", // "sakura" 是樱花图标，"rotate" 是旋转动画
-      color: "#ffc0cb", // 粉红色
+      color: "var(--color-pink)", // 粉色（CSS 变量）
     },
   },
 });
@@ -245,7 +245,7 @@ export default defineConfig({
 | :--------------- | :-------- | :---------------- | :----------------------------------- |
 | `since`          | `number`  | 当前年份          | 博客起始年份。                       |
 | `icon.name`      | `string`  | `"sakura rotate"` | 版权图标名称（图标类名或 emoji）。   |
-| `icon.color`     | `string`  | `"#ffc0cb"`       | 版权图标颜色（CSS 颜色值）。         |
+| `icon.color`     | `string`  | `"var(--color-pink)"` | 版权图标颜色（CSS 颜色值）。         |
 | `count`          | `boolean` | `true`            | 是否显示统计信息（字数、阅读时间）。 |
 | `powered`        | `boolean` | `true`            | 是否显示技术声明。                   |
 | `icp.enable`     | `boolean` | `false`           | 是否显示 ICP 备案信息。              |

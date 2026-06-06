@@ -1,0 +1,56 @@
+---
+title: hyc depend
+description: 检测 HyC 运行所需的系统依赖项
+---
+
+`hyc depend` 用于检测当前系统环境中 HyC 运行所需的依赖项是否已正确安装。
+
+## 用法
+
+```bash
+hyc depend
+```
+
+## 检测项目
+
+HyC 会检测以下依赖项：
+
+| 依赖项 | 级别 | 说明 |
+| :--- | :--- | :--- |
+| Bun | 🔴 CRITICAL | JavaScript 运行时 |
+| Git | 🟡 非关键 | 版本控制 |
+| 网络连接 | 🟡 非关键 | AI 功能所需 |
+
+依赖项分为两个级别：
+- **CRITICAL**：必须安装，否则 HyC 无法运行
+- **非关键**：建议安装，缺失时部分功能不可用但核心功能正常
+
+## 输出示例
+
+```
+🔍 检测系统依赖项...
+
+✅ Bun runtime    1.3.12
+✅ Git            2.45.0
+⚠️  网络连接      不可用（AI 功能将无法使用）
+
+检测完成：1 项缺失（非关键）
+```
+
+## 常见问题
+
+### Q: depend 报 Bun 未找到？
+
+确保已安装 Bun：
+
+```bash
+# macOS / Linux
+curl -fsSL https://bun.sh/install | bash
+
+# Windows
+powershell -c "irm bun.sh/install.ps1 | iex"
+```
+
+### Q: Git 不是必须的吗？
+
+Git 用于 `hyc sync` 中的某些文件操作（如检测变更）。如果你不使用 Git，HyC 会回退到基于文件修改时间的检测。

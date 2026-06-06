@@ -1,0 +1,158 @@
+---
+title: Hyacine 插件系统
+description: 了解 Hyacine 插件架构，配置和使用内置插件
+---
+
+ShokaX 通过 Hyacine（HyC）提供了可扩展的插件系统，让你可以为博客添加各种扩展功能，如建站时间显示、鼠标点击特效等。
+
+## 插件架构
+
+Hyacine 插件系统通过**注入点（Inject Points）** 机制工作：插件可以在页面的特定位置注入 HTML、CSS 或 JavaScript，无需修改主题源代码。
+
+### 可用注入点
+
+| 注入点 | CSS 选择器 | 说明 |
+| :--- | :--- | :--- |
+| `head` | `slot[name="head"]` | 页面 `<head>` 区域，用于注入元标签、CSS 等 |
+| `layout` | `#container` | 主布局容器 |
+| `right-nav` | `#nav` | 导航栏右侧 |
+| `sidebar` | `#sidebar` | 侧边栏 |
+| `footer` | `#footer` | 页脚 |
+| `footer-status` | `.status` | 页脚状态区域 |
+| `widgets` | `.widgets` | 页脚小部件区域 |
+| `post-footer` | `.post footer` | 文章页脚（版权、打赏等） |
+
+## 配置文件
+
+插件配置在项目根目录的 `hyacine.plugin.ts` 中：
+
+```ts title="hyacine.plugin.ts"
+import { defineConfig } from "@hyacine/core/config";
+import SiteUpTime from "@hyacine/site-uptime";
+import MouseFirework from "@hyacine/mouse-firework";
+
+export default defineConfig({
+  injectPoints: {
+    head: 'slot[name="head"]',
+    layout: "#container",
+    "right-nav": "#nav",
+    sidebar: "#sidebar",
+    footer: "#footer",
+    "footer-status": ".status",
+    widgets: ".widgets",
+    "post-footer": ".post footer",
+  },
+
+  plugins: [
+    // 在这里注册插件
+  ],
+});
+```
+
+## 内置插件
+
+ShokaX 默认启用了以下两个插件：
+
+### 1. SiteUptime — 建站时间
+
+`@hyacine/site-uptime` 在页脚显示博客的运行时长。
+
+#### 配置
+
+```ts title="hyacine.plugin.ts"
+import SiteUpTime from "@hyacine/site-uptime";
+
+export default defineConfig({
+  // ...
+  plugins: [
+    SiteUpTime({
+      siteCreatedAt: "2022-08-01T00:00:00Z",   // 你的建站日期
+    }),
+  ],
+});
+```
+
+#### 效果
+
+页脚状态区域会显示类似：
+
+```
+⏱ 本站已运行 3 年 10 个月 5 天
+```
+
+### 2. MouseFirework — 鼠标点击特效
+
+`@hyacine/mouse-firework` 在用户点击页面时触发粒子特效。
+
+#### 配置
+
+```ts title="hyacine.plugin.ts"
+import MouseFirework from "@hyacine/mouse-firework";
+
+export default defineConfig({
+  // ...
+  plugins: [
+    MouseFirework({
+      colors: [
+        "rgba(255,182,185,.9)",
+        "rgba(250,227,217,.9)",
+        "rgba(187,222,214,.9)",
+        "rgba(138,198,209,.9)",
+      ],
+      count: 30,          // 每次点击生成的粒子数
+      radius: 16,         // 粒子扩散半径
+    }),
+  ],
+});
+```
+
+#### 配置项
+
+| 字段 | 类型 | 默认值 | 说明 |
+| :--- | :--- | :--- | :--- |
+| `colors` | `string[]` | 粉/橙/绿/蓝渐变 | 粒子颜色数组（CSS 颜色值）。 |
+| `count` | `number` | `30` | 每次点击生成的粒子数量。 |
+| `radius` | `number` | `16` | 粒子扩散半径（像素）。 |
+
+#### 效果
+
+在页面任意位置点击鼠标，会触发彩色粒子爆炸效果。
+
+## 禁用插件
+
+如果不想要某个插件，从 `plugins` 数组中移除即可：
+
+```ts title="hyacine.plugin.ts"
+export default defineConfig({
+  // ...
+  plugins: [
+    // SiteUpTime({ siteCreatedAt: '...' }),  ← 已注释
+    MouseFirework({ /* ... */ }),
+  ],
+});
+```
+
+## 开发自定义插件
+
+Hyacine 插件目前处于 **Alpha 阶段**，相关文档仍在准备中。
+
+如果你是开发者，可以参考以下资源：
+- [Hyacine 核心包](https://github.com/theme-shoka-x)（`@hyacine/core`）
+- 现有插件的实现：`@hyacine/site-uptime`、`@hyacine/mouse-firework`
+
+## 常见问题
+
+### Q: 为什么插件不生效？
+
+检查以下几点：
+1. 插件是否已在 `plugins` 数组中注册
+2. 注入点配置是否正确（检查 CSS 选择器是否匹配现有 DOM 结构）
+3. 运行 `bun run build` 重新构建
+
+### Q: 可以同时使用多个同类插件吗？
+
+可以。按注册顺序，后注册的插件可能覆盖前一个插件在同一注入点的内容。
+
+### Q: 如何获取更多插件？
+
+关注 [ShokaX GitHub 组织](https://github.com/theme-shoka-x) 获取最新的 Hyacine 插件发布。

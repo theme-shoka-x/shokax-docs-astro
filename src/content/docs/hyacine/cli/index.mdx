@@ -1,48 +1,103 @@
 ---
-title: 'Hyacine CLI'
-description: 'Hyacine CLI 是一个功能强大的命令行工具，旨在简化和自动化您的 Markdown 博客工作流。'
+title: Hyacine CLI 概述
+description: HyC 命令行工具的完整命令参考与架构概览
 ---
 
-# Hyacine CLI
+Hyacine CLI（`hyc`）是 ShokaX 的官方命令行工具，提供文章管理、数据库同步、AI 功能、本地 CMS 服务器等功能。
 
-**Hyacine CLI** 是您 Markdown 博客的最佳伴侣。它是一个功能强大的命令行工具，旨在简化和自动化您的内容管理工作流，让您专注于创作，而非繁琐的维护。
-
-从创建新文章到管理资源，再到一键发布，Hyacine CLI 提供了无缝的本地化体验。
-
-## 快速开始
-
-通过 `bun` 全局安装 Hyacine CLI，即可在任何地方使用它。
+## 安装
 
 ```bash
 bun add @hyacine/cli -g
 ```
 
-## 路径符号说明
+## 架构概览
 
-在 Hyacine CLI 的文档和命令输出中，您会看到 `@/` 符号用于表示**项目根目录**。这是一个内部路径标识符，用于存储和显示相对于项目根目录的路径。
+HyC 包含两个主要组件：
 
-**示例：**
-- `@/content/posts/article.md` 表示项目根目录下的 `content/posts/article.md` 文件
-- `@/assets/image.jpg` 表示项目根目录下的 `assets/image.jpg` 文件
+| 组件 | 技术栈 | 说明 |
+| :--- | :--- | :--- |
+| **CLI 工具** | Commander.js + TypeScript | 命令行交互，文章管理 |
+| **本地 API 服务** | Elysia.js REST API | `hyc serve` 启动，供前端控制台调用 |
+| **前端控制台** | Vue 3 + Vite | 浏览器端可视化操作界面 |
 
-**用户输入：**
-某些命令（如 `move`）支持在输入路径时使用 `@/` 前缀，作为项目根目录的简写。具体支持情况请参考各命令的文档说明。
+HyC 使用 **lowdb**（JSON 文件数据库）存储文章元数据、关系映射和 AI 生成的向量嵌入。所有路径使用 `@/` 前缀表示项目根目录相对路径。
 
-## 核心功能
+## 命令速查
 
-Hyacine CLI 围绕您的内容创作和管理流程，提供了一系列精心设计的功能。
+| 命令 | 用法 | 说明 |
+| :--- | :--- | :--- |
+| `hyc init` | `hyc init` | 初始化项目配置 |
+| `hyc sync` | `hyc sync` | 同步数据库（解析文章、生成嵌入和 AI 摘要） |
+| `hyc depend` | `hyc depend` | 检测系统依赖项 |
+| `hyc serve` | `hyc serve [--port 3789] [--setup] [--unsafe]` | 启动本地 API 服务 |
+| `hyc new` | `hyc new [标题]` | 创建新文章 |
+| `hyc query` | `hyc query <搜索>` | 查询文章（按 ID/标题/slug/路径） |
+| `hyc edit` | `hyc edit <搜索>` | 在编辑器中打开文章 |
+| `hyc publish` | `hyc publish <搜索>` | 发布文章（取消草稿状态） |
+| `hyc unpublish` | `hyc unpublish <搜索>` | 取消发布（设为草稿） |
+| `hyc draft` | `hyc draft <搜索>` | `unpublish` 的别名 |
+| `hyc list` | `hyc list [type]` | 列出内容（posts/assets/all） |
+| `hyc optimize` | `hyc optimize [--online]` | 优化数据库（清理孤立资产） |
+| `hyc sort` | `hyc sort <mode>` | 整理文章（category/timeline/flat） |
+| `hyc migrate` | `hyc migrate <mode> [--asset-mode]` | 迁移文章结构 |
+| `hyc move` | `hyc move <搜索> <目标>` | 移动文章到新目录 |
+| `hyc rename` | `hyc rename <搜索> <新名称>` | 重命名文章 |
+| `hyc stats` | `hyc stats` | 显示文章统计信息 |
+| `hyc backup` | `hyc backup [输出路径]` | 备份项目和资产 |
+| `hyc category set` | `hyc category set <搜索> <分类>` | 设置文章分类 |
+| `hyc category add` | `hyc category add <搜索> <分类>` | 添加文章分类 |
 
-<CardGrid>
-	<Card title="内容管理" icon="document">
-		轻松创建、编辑、发布、移动和重命名您的 Markdown 文章。
-	</Card>
-	<Card title="资源同步" icon="sync">
-		自动扫描、跟踪并优化文章中引用的图片等资源，确保链接永不失效。
-	</Card>
-	<Card title="项目配置" icon="setting">
-		通过 `hyacine.yml` 进行项目初始化和配置，实现团队间的标准化协作。
-	</Card>
-	<Card title="数据迁移" icon="forward">
-		支持从其他博客平台（如 Hexo）平滑迁移您的内容和资源。
-	</Card>
-</CardGrid>
+## JavaScript API
+
+从 `@hyacine/cli/api` 可以引入可复用的业务能力（Bun 运行时）：
+
+```ts
+import { createPost, listContent, publishPost, scanAssetIssues } from "@hyacine/cli/api";
+
+const created = await createPost("Hello Hyacine", {
+  categories: ["notes", "demo"],
+});
+
+await publishPost(String(created.id));
+const content = await listContent("posts");
+const issues = await scanAssetIssues(false);
+```
+
+### 可用 JS API
+
+| 函数 | 说明 |
+| :--- | :--- |
+| `createPost(title, options?)` | 创建新文章 |
+| `getPost(query)` | 查询文章 |
+| `getPostSummary(query)` | 获取文章 AI 摘要 |
+| `publishPost(query)` / `unpublishPost(query)` | 发布/取消发布 |
+| `setPostCategories(query, categories)` / `addPostCategory(query, category)` | 管理分类 |
+| `movePost(query, targetPath)` / `renamePost(query, newName)` | 移动/重命名 |
+| `listContent(type?)` / `getPostStats()` | 列出内容/获取统计 |
+| `syncProjectDatabase(options?)` | 同步数据库 |
+| `scanAssetIssues(online?)` / `deleteAssetIssues(issueIds)` | 资产管理 |
+| `sortPosts(mode)` / `backupProject(outputPath?)` | 整理/备份 |
+| `readThemeConfig()` / `writeThemeConfig(config)` | 主题配置读写 |
+| `listThemeFonts()` / `listThemeImages()` | 列出字体/图片 |
+| `replaceThemeFontFromUpload(...)` / `replaceThemeImageFromUpload(...)` | 替换字体/图片 |
+| `findSimilarPosts(query, limit?)` | 查找相似文章 |
+
+:::caution
+JS API 需要 Bun 运行时环境。
+:::
+
+## 详细文档
+
+各命令的详细用法请参考对应页面：
+
+| 文档 | 说明 |
+| :--- | :--- |
+| [hyc init](/hyacine/cli/init/) | 初始化项目配置 |
+| [hyc sync](/hyacine/cli/sync/) | 数据库同步与 AI 嵌入/摘要 |
+| [hyc depend](/hyacine/cli/depend/) | 系统依赖项检测 |
+| [hyc serve](/hyacine/cli/serve/) | 本地 API 服务（含完整 API 参考） |
+| [hyc migrate](/hyacine/cli/migrate/) | 迁移文章目录结构 |
+| [draft / unpublish](/hyacine/cli/posts/draft/) | 草稿与取消发布 |
+| [文章管理命令](/hyacine/cli/posts/) | new, edit, publish, list, move, rename, sort, backup 等 |
+| [hyacine.yml 配置参考](/hyacine/config/) | 项目配置文件完整字段说明 |

@@ -67,6 +67,10 @@ export default defineConfig({
               {
                 label: "Hyacine CLI",
                 items: [{ autogenerate: { directory: "/hyacine/cli/" } }],
+              },
+              {
+                label: "Hyacine 插件",
+                items: [{ autogenerate: { directory: "/hyacine/plugins/" } }],
               }
             ]
           }
